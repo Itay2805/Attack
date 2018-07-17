@@ -1,5 +1,15 @@
 package fuck.it.attack.graphics;
 
+import org.joml.Matrix4f;
+import org.joml.Vector2f;
+import org.joml.Vector3f;
+import org.joml.Vector4f;
+
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+import java.util.HashMap;
+import java.util.Map;
+
 import fuck.it.attack.core.FileUtils;
 import fuck.it.attack.core.Logger;
 
@@ -8,6 +18,8 @@ import static android.opengl.GLES30.*;
 public class Shader {
 
 	private int programId;
+
+	private HashMap<String, Integer> uniforms = new HashMap<>();
 
 	public Shader(String vertexPath, String fragmentPath) {
 		String vertexSource = FileUtils.readFile(vertexPath);
@@ -21,6 +33,19 @@ public class Shader {
 		glAttachShader(programId, fragmentShader);
 
 		glLinkProgram(programId);
+
+		final int[] data = new int[2];
+		glGetProgramiv(programId, GL_ACTIVE_UNIFORMS, data, 0);
+		glGetProgramiv(programId, GL_ACTIVE_UNIFORM_MAX_LENGTH, data, 1);
+
+		IntBuffer sizeBuffer = IntBuffer.allocate(1);
+		IntBuffer typeBuffer = IntBuffer.allocate(1);
+
+		for(int i=0; i < data[0]; i++) {
+			String name = glGetActiveUniform(programId, i, sizeBuffer, typeBuffer);
+			int location = glGetUniformLocation(programId, name);
+			uniforms.put(name, location);
+		}
 
 		glDetachShader(programId, vertexShader);
 		glDetachShader(programId, fragmentShader);
@@ -57,6 +82,33 @@ public class Shader {
 
 	public void stop() {
 		glUseProgram(0);
+	}
+
+	public void setFloat(String name, float v) {
+		glUniform1f(uniforms.get(name), v);
+	}
+
+	public void setInt(String name, int v) {
+		glUniform1i(uniforms.get(name), v);
+	}
+
+	public void setVec2(String name, Vector2f vector) {
+		glUniform2f(uniforms.get(name), vector.x, vector.y);
+	}
+
+	public void setVec3(String name, Vector3f vector) {
+		glUniform3f(uniforms.get(name), vector.x, vector.y, vector.z);
+	}
+
+	public void setVec4(String name, Vector4f vector) {
+		glUniform4f(uniforms.get(name), vector.x, vector.y, vector.z, vector.w);
+	}
+
+	public void setMat4(String name, Matrix4f matrix) {
+		FloatBuffer buffer = FloatBuffer.allocate(16);
+		buffer = matrix.get(buffer);
+		buffer.flip();
+		glUniformMatrix4fv(uniforms.get(name), 1, false, buffer);
 	}
 
 	private enum ShaderType {
