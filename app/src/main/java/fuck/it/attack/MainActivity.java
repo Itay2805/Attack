@@ -12,6 +12,9 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 
+import java.io.File;
+
+import fuck.it.attack.core.FileUtils;
 import fuck.it.attack.core.Logger;
 import fuck.it.attack.joystick.JoystickMovedListener;
 import fuck.it.attack.joystick.JoystickView;
@@ -31,6 +34,8 @@ public class MainActivity extends Activity {
 
 		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 		this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
+		FileUtils.assetManager = getAssets();
 
 		ActivityManager am = (ActivityManager)getSystemService(Context.ACTIVITY_SERVICE);
 		ConfigurationInfo  info = am.getDeviceConfigurationInfo();
