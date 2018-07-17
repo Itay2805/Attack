@@ -2,6 +2,10 @@ package fuck.it.attack;
 
 import android.opengl.GLSurfaceView;
 
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.games.Games;
+import com.google.android.gms.games.RealTimeMultiplayerClient;
+
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
