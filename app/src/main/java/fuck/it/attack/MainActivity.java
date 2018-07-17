@@ -26,6 +26,17 @@ public class MainActivity extends Activity {
 	private static JoystickView rightJoystick;
 	private static JoystickView leftJoystick;
 
+
+	/**
+	 *
+	 *
+	 * FOOOOOOOOOOOOOD
+	 *
+	 *
+	 *
+	 * @param savedInstanceState
+	 */
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
