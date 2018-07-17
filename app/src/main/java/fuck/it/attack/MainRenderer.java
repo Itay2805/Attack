@@ -1,19 +1,30 @@
 package fuck.it.attack;
 
-import android.opengl.GLES30;
 import android.opengl.GLSurfaceView;
-import android.util.Log;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 import fuck.it.attack.core.Logger;
+import fuck.it.attack.graphics.Shader;
 
 public class MainRenderer implements GLSurfaceView.Renderer {
 
+	private final double ns = 1000000000.0 / 60.0;
+	private long lastTime = System.nanoTime();
+	private long timer = System.currentTimeMillis();
+	private double delta = 0;
+	private int frames = 0;
+	private int updates = 0;
+
+	private Shader shader;
+
 	@Override
 	public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-
+		shader = new Shader("basicShader.vert", "basicShader.frag");
+		shader.start();
+		shader.stop();
+		// lol
 	}
 
 	@Override
@@ -21,20 +32,13 @@ public class MainRenderer implements GLSurfaceView.Renderer {
 
 	}
 
-	private long lastTime = System.nanoTime();
-	private long timer = System.currentTimeMillis();
-	private final double ns = 1000000000.0 / 60.0;
-	private double delta = 0;
-	private int frames = 0;
-	private int updates = 0;
-
 	@Override
 	public void onDrawFrame(GL10 gl) {
 		long now = System.nanoTime();
 		delta += (now - lastTime) / ns;
 		lastTime = now;
 
-		while(delta >= 1) {
+		while (delta >= 1) {
 			update();
 			updates++;
 			delta--;
@@ -42,7 +46,7 @@ public class MainRenderer implements GLSurfaceView.Renderer {
 		render();
 		frames++;
 
-		if(System.currentTimeMillis() - timer > 1000) {
+		if (System.currentTimeMillis() - timer > 1000) {
 			tick();
 			timer += 1000;
 			Logger.debug("[FPS] fps: " + frames + ", ups: " + updates);

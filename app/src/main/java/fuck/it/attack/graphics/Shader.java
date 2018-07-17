@@ -51,6 +51,14 @@ public class Shader {
 		return shaderId;
 	}
 
+	public void start() {
+		glUseProgram(programId);
+	}
+
+	public void stop() {
+		glUseProgram(0);
+	}
+
 	private enum ShaderType {
 		VERTEX,
 		FRAGMENT

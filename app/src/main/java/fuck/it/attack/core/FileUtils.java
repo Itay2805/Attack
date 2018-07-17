@@ -17,16 +17,16 @@ public class FileUtils {
 		try {
 			reader = new BufferedReader(new InputStreamReader(assetManager.open(path)));
 			String line;
-			while((line = reader.readLine()) != null) {
-				result.append(line);
+			while ((line = reader.readLine()) != null) {
+				result.append(line + "\n");
 			}
 		} catch (IOException e) {
 			Logger.error("Could not open file \"" + path + "\"");
 		} finally {
-			if(reader != null) {
+			if (reader != null) {
 				try {
 					reader.close();
-				} catch(IOException e) {
+				} catch (IOException e) {
 					Logger.error("Could not close file \"" + path + "\"");
 				}
 			}
