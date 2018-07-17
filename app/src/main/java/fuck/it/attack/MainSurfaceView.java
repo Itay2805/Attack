@@ -5,8 +5,8 @@ import android.opengl.GLSurfaceView;
 
 public class MainSurfaceView extends GLSurfaceView {
 
-    public MainSurfaceView(Context context) {
-        super(context);
-    }
+	public MainSurfaceView(Context context) {
+		super(context);
+	}
 
 }
