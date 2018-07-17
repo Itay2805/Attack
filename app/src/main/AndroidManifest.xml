@@ -15,7 +15,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true">
         <activity
-            android:screenOrientation="landscape"
+            android:screenOrientation="sensorLandscape"
             android:name=".MainActivity">
 
             <meta-data android:name="com.google.android.gms.games.APP_ID"

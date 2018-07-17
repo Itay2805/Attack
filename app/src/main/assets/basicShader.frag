@@ -1,7 +1,11 @@
 #version 300 es
 
+in vec2 uvs;
+
+uniform sampler2D tex;
+
 out vec4 color;
 
 void main() {
-    color = vec4(1,1,1,1);
+    color = texture(tex, uvs);
 }

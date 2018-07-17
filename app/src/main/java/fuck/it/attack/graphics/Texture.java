@@ -4,6 +4,10 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.opengl.GLUtils;
 
+import java.io.IOException;
+
+import fuck.it.attack.core.FileUtils;
+
 import static android.opengl.GLES30.*;
 
 public class Texture {
@@ -44,16 +48,22 @@ public class Texture {
 	}
 
 	public static Texture createTexture(String path) {
-		Texture texture;
+		Texture texture = null;
 
 		final BitmapFactory.Options options = new BitmapFactory.Options();
 		options.inScaled = false;
 
-		final Bitmap bitmap = BitmapFactory.decodeFile(path, options);
+		Bitmap bitmap = null;
+		try {
+			bitmap = BitmapFactory.decodeStream(FileUtils.assetManager.open(path));
+			texture = new Texture(bitmap);
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			if(bitmap != null)
+				bitmap.recycle();
+		}
 
-		texture = new Texture(bitmap);
-
-		bitmap.recycle();
 		return texture;
 	}
 
