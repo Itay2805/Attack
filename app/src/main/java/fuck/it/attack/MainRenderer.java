@@ -102,7 +102,7 @@ public class MainRenderer implements GLSurfaceView.Renderer {
 		if (System.currentTimeMillis() - timer > 1000) {
 			tick();
 			timer += 1000;
-			Logger.debug("[FPS] fps: " + frames + ", ups: " + updates);
+			//Logger.debug("[FPS] fps: " + frames + ", ups: " + updates);
 			frames = 0;
 			updates = 0;
 		}
