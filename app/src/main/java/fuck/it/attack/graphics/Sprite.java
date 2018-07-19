@@ -1,7 +1,5 @@
 package fuck.it.attack.graphics;
 
-import android.graphics.Color;
-
 public class Sprite {
 
 	public float x, y;
@@ -23,5 +21,4 @@ public class Sprite {
 		this.height = height;
 		this.color = color;
 	}
-
 }

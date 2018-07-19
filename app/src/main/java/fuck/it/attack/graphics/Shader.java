@@ -111,6 +111,11 @@ public class Shader {
 		glUniformMatrix4fv(uniforms.get(name), 1, false, buffer);
 	}
 
+	public void cleanUp() {
+		stop();
+		glDeleteProgram(programId);
+	}
+
 	private enum ShaderType {
 		VERTEX,
 		FRAGMENT
