@@ -2,7 +2,7 @@ package fuck.it.attack.graphics;
 
 import org.joml.Vector2f;
 
-public abstract class Sprite {
+public class Sprite {
 
 	public float x, y;
 	public float width, height;
