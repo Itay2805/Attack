@@ -75,6 +75,10 @@ public class Texture {
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 
+	public int getId() {
+		return id;
+	}
+
 	public void cleanUp() {
 		final int[] ids = {id};
 		unbind();
