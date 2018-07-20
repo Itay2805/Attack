@@ -123,7 +123,7 @@ public class Shader {
 		buffer.put(matrix.m32());
 		buffer.put(matrix.m33());
 		buffer.flip();
-		
+
 		glUniformMatrix4fv(uniforms.get(name), 1, false, buffer);
 	}
 

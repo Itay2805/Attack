@@ -136,6 +136,12 @@ public class Renderer {
 		}
 	}
 
+	public void submit(List<Sprite> sprites) {
+		for(int i=0; i < sprites.size(); i++){
+			submit(sprites.get(i));
+		}
+	}
+
 	public void end() {
 		glUnmapBuffer(GL_ARRAY_BUFFER);
 		vboData = null;
