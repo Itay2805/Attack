@@ -14,6 +14,8 @@ public class Texture {
 
 	private int id;
 
+	private int width, height;
+
 	public Texture() {
 		final int[] ids = {id};
 		glGenTextures(1, ids, 0);
@@ -28,7 +30,6 @@ public class Texture {
 		glGenTextures(1, ids, 0);
 		id = ids[0];
 		bind();
-
 		GLUtils.texImage2D(GL_TEXTURE_2D, 0, bitmap, 0);
 
 		setSamplerState();
@@ -57,6 +58,9 @@ public class Texture {
 		try {
 			bitmap = BitmapFactory.decodeStream(FileUtils.assetManager.open(path));
 			texture = new Texture(bitmap);
+			texture.width = bitmap.getWidth();
+			texture.height = bitmap.getHeight();
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
@@ -79,6 +83,14 @@ public class Texture {
 		return id;
 	}
 
+	public int getWidth() {
+		return width;
+	}
+
+	public int getHeight() {
+		return height;
+	}
+
 	public void cleanUp() {
 		final int[] ids = {id};
 		unbind();
@@ -91,4 +103,5 @@ public class Texture {
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	}
+
 }
