@@ -1,5 +1,6 @@
 package fuck.it.attack.graphics;
 
+import org.joml.Matrix4f;
 import org.joml.Vector2f;
 
 import java.nio.ByteBuffer;
@@ -185,4 +186,11 @@ public class Renderer {
 		textures.add(texture);
 		return textures.size();
 	}
+
+	public void setProjectionMatrix(Matrix4f projectionMatrix) {
+		shader.start();
+		shader.setMat4("projectionMatrix", projectionMatrix);
+		shader.stop();
+	}
+
 }

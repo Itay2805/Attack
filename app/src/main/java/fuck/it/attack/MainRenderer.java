@@ -2,6 +2,8 @@ package fuck.it.attack;
 
 import android.opengl.GLSurfaceView;
 
+import org.joml.Matrix4f;
+
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
@@ -13,13 +15,14 @@ import static android.opengl.GLES30.*;
 
 public class MainRenderer implements GLSurfaceView.Renderer {
 
+	private static final int WIDTH = 1920;
+	private static final int HEIGHT = 1080;
 	private final double ns = 1000000000.0 / 60.0;
 	private long lastTime = System.nanoTime();
 	private long timer = System.currentTimeMillis();
 	private double delta = 0;
 	private int frames = 0;
 	private int updates = 0;
-
 	private Renderer renderer;
 	private Sprite[] sprites;
 	private SpriteSheet sheet;
@@ -32,12 +35,14 @@ public class MainRenderer implements GLSurfaceView.Renderer {
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 		renderer = new Renderer();
+		renderer.setProjectionMatrix(new Matrix4f().ortho(0, WIDTH, 0, HEIGHT, 1, -1));
+
 		sheet = new SpriteSheet("spritesheet.png");
 		sprites = new Sprite[4];
-		sprites[0] = new Sprite(-1.0f, 0.0f, 1.0f, 1.0f, sheet, 0, 0);
-		sprites[1] = new Sprite(0.0f, 0.0f, 1.0f, 1.0f, sheet, 1, 0);
-		sprites[2] = new Sprite(-1.0f,-1.0f, 1.0f, 1.0f, sheet, 0, 1);
-		sprites[3] = new Sprite(0.0f, -1.0f, 1.0f, 1.0f, sheet, 1, 1);
+		sprites[0] = new Sprite(     0.0f   , HEIGHT / 2.0f, WIDTH / 2.0f, HEIGHT / 2.0f, sheet, 0, 0);
+		sprites[1] = new Sprite(WIDTH / 2.0f, HEIGHT / 2.0f, WIDTH / 2.0f, HEIGHT / 2.0f, sheet, 1, 0);
+		sprites[2] = new Sprite(     0.0f   ,      0.0f    , WIDTH / 2.0f, HEIGHT / 2.0f, sheet, 0, 1);
+		sprites[3] = new Sprite(WIDTH / 2.0f,      0.0f    , WIDTH / 2.0f, HEIGHT / 2.0f, sheet, 1, 1);
 	}
 
 	@Override

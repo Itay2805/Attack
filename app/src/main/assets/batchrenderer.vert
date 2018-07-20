@@ -13,7 +13,7 @@ out vec4 pass_color;
 out float pass_texId;
 
 void main() {
-    gl_Position = vec4(position, 1.0);
+    gl_Position = projectionMatrix * vec4(position, 1.0);
     pass_uv = uv;
     pass_color = color;
     pass_texId = texId;
