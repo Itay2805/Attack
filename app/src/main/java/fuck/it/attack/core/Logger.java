@@ -2,10 +2,6 @@ package fuck.it.attack.core;
 
 import android.util.Log;
 
-/**
- * Created by Rares on 17-Jul-18.
- */
-
 public class Logger {
 
 	public static final String TAG = "Attack";
