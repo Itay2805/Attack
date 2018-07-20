@@ -106,8 +106,24 @@ public class Shader {
 
 	public void setMat4(String name, Matrix4f matrix) {
 		FloatBuffer buffer = FloatBuffer.allocate(16);
-		buffer = matrix.get(buffer);
+		buffer.put(matrix.m00());
+		buffer.put(matrix.m01());
+		buffer.put(matrix.m02());
+		buffer.put(matrix.m03());
+		buffer.put(matrix.m10());
+		buffer.put(matrix.m11());
+		buffer.put(matrix.m12());
+		buffer.put(matrix.m13());
+		buffer.put(matrix.m20());
+		buffer.put(matrix.m21());
+		buffer.put(matrix.m22());
+		buffer.put(matrix.m23());
+		buffer.put(matrix.m30());
+		buffer.put(matrix.m31());
+		buffer.put(matrix.m32());
+		buffer.put(matrix.m33());
 		buffer.flip();
+		
 		glUniformMatrix4fv(uniforms.get(name), 1, false, buffer);
 	}
 
