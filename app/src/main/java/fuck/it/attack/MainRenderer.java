@@ -2,18 +2,12 @@ package fuck.it.attack;
 
 import android.opengl.GLSurfaceView;
 
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
-
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-import fuck.it.attack.core.Logger;
-import fuck.it.attack.graphics.Color;
 import fuck.it.attack.graphics.Renderer;
-import fuck.it.attack.graphics.Shader;
 import fuck.it.attack.graphics.Sprite;
-import fuck.it.attack.graphics.Texture;
+import fuck.it.attack.graphics.SpriteSheet;
 
 import static android.opengl.GLES30.*;
 
@@ -27,13 +21,23 @@ public class MainRenderer implements GLSurfaceView.Renderer {
 	private int updates = 0;
 
 	private Renderer renderer;
-	private Sprite sprite;
+	private Sprite[] sprites;
+	private SpriteSheet sheet;
+
 	@Override
 	public void onSurfaceCreated(GL10 gl, EGLConfig config) {
 		glClearColor(0.3f, 0.4f, 0.7f, 1.0f);
 
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 		renderer = new Renderer();
-		sprite = new Sprite(-0.5f, -0.5f, 1.0f, 1.0f, Texture.createTexture("icon.png"));
+		sheet = new SpriteSheet("spritesheet.png");
+		sprites = new Sprite[4];
+		sprites[0] = new Sprite(-1.0f, 0.0f, 1.0f, 1.0f, sheet, 0, 0);
+		sprites[1] = new Sprite(0.0f, 0.0f, 1.0f, 1.0f, sheet, 1, 0);
+		sprites[2] = new Sprite(-1.0f,-1.0f, 1.0f, 1.0f, sheet, 0, 1);
+		sprites[3] = new Sprite(0.0f, -1.0f, 1.0f, 1.0f, sheet, 1, 1);
 	}
 
 	@Override
@@ -78,7 +82,7 @@ public class MainRenderer implements GLSurfaceView.Renderer {
 	public void render() {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		renderer.begin();
-		renderer.submit(sprite);
+		renderer.submit(sprites);
 		renderer.end();
 		renderer.draw();
 	}
