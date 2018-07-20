@@ -1,6 +1,8 @@
 package fuck.it.attack.graphics;
 
-public class Sprite {
+import org.joml.Vector2f;
+
+public abstract class Sprite {
 
 	public float x, y;
 	public float width, height;
@@ -42,5 +44,13 @@ public class Sprite {
 	public void setTexture(Texture texture) {
 		this.texture = texture;
 		hasTexture = true;
+	}
+
+	public Vector2f getUv1() {
+		return new Vector2f(0, 0);
+	}
+
+	public Vector2f getUv2() {
+		return new Vector2f(1, 1);
 	}
 }
