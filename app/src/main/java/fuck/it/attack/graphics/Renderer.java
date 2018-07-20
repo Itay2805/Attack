@@ -112,21 +112,27 @@ public class Renderer {
 		vboData.put(new float[]{textureId});
 
 		vboData.put(new float[]{sprite.x + sprite.width, sprite.y, 0});
-		vboData.put(new float[]{uv1.x + uv2.x, uv1.y});
+		vboData.put(new float[]{uv2.x, uv1.y});
 		vboData.put(new float[]{sprite.getColorFloat()});
 		vboData.put(new float[]{textureId});
 
 		vboData.put(new float[]{sprite.x + sprite.width, sprite.y + sprite.height, 0});
-		vboData.put(new float[]{uv1.x + uv2.x, uv1.y + uv2.y});
+		vboData.put(new float[]{uv2.x, uv2.y});
 		vboData.put(new float[]{sprite.getColorFloat()});
 		vboData.put(new float[]{textureId});
 
 		vboData.put(new float[]{sprite.x, sprite.y + sprite.height, 0});
-		vboData.put(new float[]{uv1.x, uv1.y + uv2.y});
+		vboData.put(new float[]{uv1.x, uv2.y});
 		vboData.put(new float[]{sprite.getColorFloat()});
 		vboData.put(new float[]{textureId});
 
 		indicesCount += 6;
+	}
+
+	public void submit(Sprite[] sprites) {
+		for(int i=0; i < sprites.length; i++){
+			submit(sprites[i]);
+		}
 	}
 
 	public void end() {
