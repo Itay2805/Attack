@@ -6,16 +6,19 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
+import java.util.ArrayList;
+import java.util.List;
 
 import static android.opengl.GLES30.*;
 
 public class Renderer {
 
-	public static final int NUM_SPRITES = 10000;
-	public static final int VERTEX_SIZE = 3 + 2 + 1 + 1; // position, uvs, color, texId
-	public static final int VERTEX_SIZE_IN_BYTES = VERTEX_SIZE * 4;
-	public static final int INDICES_COUNT = NUM_SPRITES * 6;
-	public static final int VERTEX_BUFFER_SIZE = VERTEX_SIZE * NUM_SPRITES;
+	private static final int NUM_SPRITES = 10000;
+	private static final int VERTEX_SIZE = 3 + 2 + 1 + 1; // position, uvs, color, texId
+	private static final int VERTEX_SIZE_IN_BYTES = VERTEX_SIZE * 4;
+	private static final int INDICES_COUNT = NUM_SPRITES * 6;
+	private static final int VERTEX_BUFFER_SIZE = VERTEX_SIZE * NUM_SPRITES;
+	private static final int MAX_TEXTURES = 16;
 
 	private int vbo;
 	private int ibo;
@@ -26,6 +29,8 @@ public class Renderer {
 	private FloatBuffer vboData;
 
 	private Shader shader;
+
+	private List<Texture> textures = new ArrayList<>();
 
 	public Renderer() {
 		final int[] buffers = new int[3];
@@ -93,25 +98,33 @@ public class Renderer {
 		Vector2f uv1 = sprite.getUv1();
 		Vector2f uv2 = sprite.getUv2();
 
+		float textureId;
+
+		if (sprite.hasTexture) {
+			textureId = submitTexture(sprite.texture);
+		} else {
+			textureId = 0;
+		}
+
 		vboData.put(new float[]{sprite.x, sprite.y, 0});
 		vboData.put(new float[]{uv1.x, uv1.y});
-		vboData.put(new float[]{sprite.color.toFloat()});
-		vboData.put(new float[]{0});
+		vboData.put(new float[]{sprite.getColorFloat()});
+		vboData.put(new float[]{textureId});
 
 		vboData.put(new float[]{sprite.x + sprite.width, sprite.y, 0});
 		vboData.put(new float[]{uv1.x + uv2.x, uv1.y});
-		vboData.put(new float[]{sprite.color.toFloat()});
-		vboData.put(new float[]{0});
+		vboData.put(new float[]{sprite.getColorFloat()});
+		vboData.put(new float[]{textureId});
 
 		vboData.put(new float[]{sprite.x + sprite.width, sprite.y + sprite.height, 0});
 		vboData.put(new float[]{uv1.x + uv2.x, uv1.y + uv2.y});
-		vboData.put(new float[]{sprite.color.toFloat()});
-		vboData.put(new float[]{0});
+		vboData.put(new float[]{sprite.getColorFloat()});
+		vboData.put(new float[]{textureId});
 
 		vboData.put(new float[]{sprite.x, sprite.y + sprite.height, 0});
 		vboData.put(new float[]{uv1.x, uv1.y + uv2.y});
-		vboData.put(new float[]{sprite.color.toFloat()});
-		vboData.put(new float[]{0});
+		vboData.put(new float[]{sprite.getColorFloat()});
+		vboData.put(new float[]{textureId});
 
 		indicesCount += 6;
 	}
@@ -126,6 +139,11 @@ public class Renderer {
 		glBindVertexArray(vao);
 		glBindBuffer(GL_ARRAY_BUFFER, vbo);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+
+		for(int i=0; i < textures.size(); i++) {
+			glActiveTexture(GL_TEXTURE0 + i);
+			textures.get(i).bind();
+		}
 
 		glDrawElements(GL_TRIANGLES, indicesCount, GL_UNSIGNED_INT, 0);
 
@@ -144,5 +162,21 @@ public class Renderer {
 		glDeleteBuffers(2, buffers, 0);
 		glDeleteVertexArrays(1, buffers, 2);
 		shader.cleanUp();
+	}
+
+	private float submitTexture(Texture texture) {
+		for (int i = 0; i < textures.size(); i++) {
+			if (textures.get(i).getId() == texture.getId()) {
+				return (float) (i + 1);
+			}
+		}
+		if (textures.size() > MAX_TEXTURES) {
+			end();
+			draw();
+			begin();
+			submitTexture(texture);
+		}
+		textures.add(texture);
+		return textures.size();
 	}
 }
