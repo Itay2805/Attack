@@ -33,7 +33,7 @@ public class MainRenderer implements GLSurfaceView.Renderer {
 		glClearColor(0.3f, 0.4f, 0.7f, 1.0f);
 
 		renderer = new Renderer();
-		sprite = new Sprite(-0.5f, -0.5f, 1.0f, 1.0f, new Color(0.5f, 0.5f, 0.5f));
+		sprite = new Sprite(-0.5f, -0.5f, 1.0f, 1.0f, Texture.createTexture("icon.png"));
 	}
 
 	@Override
@@ -58,7 +58,7 @@ public class MainRenderer implements GLSurfaceView.Renderer {
 		if (System.currentTimeMillis() - timer > 1000) {
 			tick();
 			timer += 1000;
-			Logger.debug("[FPS] fps: " + frames + ", ups: " + updates);
+			//Logger.debug("[FPS] fps: " + frames + ", ups: " + updates);
 			frames = 0;
 			updates = 0;
 		}
