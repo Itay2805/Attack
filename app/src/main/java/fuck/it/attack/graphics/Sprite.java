@@ -53,4 +53,12 @@ public class Sprite {
 	public Vector2f getUv2() {
 		return new Vector2f(1, 1);
 	}
+
+	public float getColorFloat() {
+		if(color == null) {
+			return 0.0f;
+		} else {
+			return color.toFloat();
+		}
+	}
 }
