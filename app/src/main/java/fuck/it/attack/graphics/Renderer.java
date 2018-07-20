@@ -1,5 +1,7 @@
 package fuck.it.attack.graphics;
 
+import org.joml.Vector2f;
+
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
@@ -42,7 +44,7 @@ public class Renderer {
 		vboData.clear();
 		vboData.flip();
 
-		glBufferData(GL_ARRAY_BUFFER, VERTEX_BUFFER_SIZE * 4, null, GL_STATIC_DRAW );
+		glBufferData(GL_ARRAY_BUFFER, VERTEX_BUFFER_SIZE * 4, null, GL_STATIC_DRAW);
 
 		glEnableVertexAttribArray(0); // position
 		glEnableVertexAttribArray(1); // uvs
@@ -83,30 +85,33 @@ public class Renderer {
 	public void begin() {
 		indicesCount = 0;
 		glBindBuffer(GL_ARRAY_BUFFER, vbo);
-		vboData = ((ByteBuffer)glMapBufferRange(GL_ARRAY_BUFFER, 0, VERTEX_BUFFER_SIZE * 4, GL_MAP_WRITE_BIT))
+		vboData = ((ByteBuffer) glMapBufferRange(GL_ARRAY_BUFFER, 0, VERTEX_BUFFER_SIZE * 4, GL_MAP_WRITE_BIT))
 				.order(ByteOrder.nativeOrder()).asFloatBuffer();
 	}
 
 	public void submit(Sprite sprite) {
-		vboData.put(new float[] {sprite.x, sprite.y, 0});
-		vboData.put(new float[] {0, 0});
-		vboData.put(new float[] {sprite.color.toFloat()});
-		vboData.put(new float[] {0});
+		Vector2f uv1 = sprite.getUv1();
+		Vector2f uv2 = sprite.getUv2();
 
-		vboData.put(new float[] {sprite.x + sprite.width, sprite.y, 0});
-		vboData.put(new float[] {1, 0});
-		vboData.put(new float[] {sprite.color.toFloat()});
-		vboData.put(new float[] {0});
+		vboData.put(new float[]{sprite.x, sprite.y, 0});
+		vboData.put(new float[]{uv1.x, uv1.y});
+		vboData.put(new float[]{sprite.color.toFloat()});
+		vboData.put(new float[]{0});
 
-		vboData.put(new float[] {sprite.x + sprite.width, sprite.y + sprite.height, 0});
-		vboData.put(new float[] {1, 1});
-		vboData.put(new float[] {sprite.color.toFloat()});
-		vboData.put(new float[] {0});
+		vboData.put(new float[]{sprite.x + sprite.width, sprite.y, 0});
+		vboData.put(new float[]{uv1.x + uv2.x, uv1.y});
+		vboData.put(new float[]{sprite.color.toFloat()});
+		vboData.put(new float[]{0});
 
-		vboData.put(new float[] {sprite.x, sprite.y + sprite.height, 0});
-		vboData.put(new float[] {0, 1});
-		vboData.put(new float[] {sprite.color.toFloat()});
-		vboData.put(new float[] {0});
+		vboData.put(new float[]{sprite.x + sprite.width, sprite.y + sprite.height, 0});
+		vboData.put(new float[]{uv1.x + uv2.x, uv1.y + uv2.y});
+		vboData.put(new float[]{sprite.color.toFloat()});
+		vboData.put(new float[]{0});
+
+		vboData.put(new float[]{sprite.x, sprite.y + sprite.height, 0});
+		vboData.put(new float[]{uv1.x, uv1.y + uv2.y});
+		vboData.put(new float[]{sprite.color.toFloat()});
+		vboData.put(new float[]{0});
 
 		indicesCount += 6;
 	}
