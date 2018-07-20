@@ -26,6 +26,7 @@ import com.google.android.gms.tasks.Task;
 
 import fuck.it.attack.core.FileUtils;
 import fuck.it.attack.core.Logger;
+import fuck.it.attack.core.input.EventDispatcher;
 import fuck.it.attack.joystick.JoystickView;
 
 public class MainActivity extends Activity {
@@ -38,6 +39,7 @@ public class MainActivity extends Activity {
 	private static GoogleSignInOptions googleSignInOptions;
 	private static GoogleSignInClient googleSignInClient;
 	private MainRenderer mainRenderer;
+	private MainSurfaceView mainSurfaceView;
 
 	public static JoystickView getLeftJoystick() {
 		return leftJoystick;
@@ -67,7 +69,7 @@ public class MainActivity extends Activity {
 		boolean supportES3 = (info.reqGlEsVersion >= 0x30000);
 		if (supportES3) {
 			mainRenderer = new MainRenderer();
-			MainSurfaceView mainSurfaceView = new MainSurfaceView(context);
+			mainSurfaceView = new MainSurfaceView(context);
 			mainSurfaceView.setEGLContextClientVersion(3);
 			mainSurfaceView.setRenderer(mainRenderer);
 
@@ -107,22 +109,24 @@ public class MainActivity extends Activity {
 		googleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build();
 
 		googleSignInClient = GoogleSignIn.getClient(this, googleSignInOptions);
+
+		EventDispatcher.init(this, mainSurfaceView);
 	}
 
 	@Override
 	protected void onStart() {
 		super.onStart();
 
-		if(GoogleSignIn.getLastSignedInAccount(this) != null) {
+		if (GoogleSignIn.getLastSignedInAccount(this) != null) {
 			Task<GoogleSignInAccount> task = googleSignInClient.silentSignIn();
 			task.addOnCompleteListener(this, new OnCompleteListener<GoogleSignInAccount>() {
 				@Override
 				public void onComplete(@NonNull Task<GoogleSignInAccount> task) {
-					if(task.isSuccessful()) {
+					if (task.isSuccessful()) {
 						Logger.info("Log in successful!");
 					} else {
 						Logger.error("Log in failed!");
-						ApiException e = (ApiException)task.getException();
+						ApiException e = (ApiException) task.getException();
 						Logger.error("Status code: " + e.getStatusCode() + "\nStack trace: " + e.getStackTrace().toString());
 						explicitSignIn();
 					}
@@ -141,9 +145,9 @@ public class MainActivity extends Activity {
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
-		if(requestCode == SIGN_IN_RESULT) {
+		if (requestCode == SIGN_IN_RESULT) {
 			GoogleSignInResult googleSignInResult = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-			if(googleSignInResult.isSuccess()) {
+			if (googleSignInResult.isSuccess()) {
 				googleSignInAccount = googleSignInResult.getSignInAccount();
 				Logger.info("Sign in successful! Welcome, " + googleSignInAccount.getDisplayName());
 			} else {
@@ -157,7 +161,6 @@ public class MainActivity extends Activity {
 		super.onDestroy();
 		mainRenderer.cleanUp();
 	}
-
 
 	private void explicitSignIn() {
 		Intent intent = googleSignInClient.getSignInIntent();
