@@ -10,6 +10,8 @@ import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
+import fuck.it.attack.core.Logger;
+
 import static android.opengl.GLES30.*;
 
 public class Renderer {
@@ -128,6 +130,16 @@ public class Renderer {
 		vboData.put(new float[]{textureId});
 
 		indicesCount += 6;
+	}
+
+	public void submitText(String text, int x, int y, Font font) {
+		for(char c : text.toCharArray()) {
+			Sprite sprite = font.getCharSprite(c);
+			sprite.x = x;
+			sprite.y = y;
+			submit(sprite);
+			x += font.getSize() + 1;
+		}
 	}
 
 	public void submit(Sprite[] sprites) {
