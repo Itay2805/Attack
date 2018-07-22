@@ -16,7 +16,7 @@ public class EventDispatcher extends GestureDetector.SimpleOnGestureListener {
 	private GestureDetector detector;
 
 	private EventDispatcher(Activity activity, View view) {
-		detector = new GestureDetector(activity, instance);
+		detector = new GestureDetector(activity, this);
 
 		view.setOnTouchListener(new View.OnTouchListener() {
 			@Override

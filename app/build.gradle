@@ -18,7 +18,16 @@ android {
     }
 }
 
+repositories {
+    maven {
+        url "https://oss.sonatype.org/content/repositories/snapshots/"
+    }
+}
+
+project.ext.jomlVersion = "1.9.3-SNAPSHOT"
+
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'com.google.android.gms:play-services-auth:15.0.1'
+    implementation "org.joml:joml-android:${jomlVersion}"
 }
