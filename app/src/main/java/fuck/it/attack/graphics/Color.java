@@ -28,6 +28,13 @@ public class Color {
 		a = (byte) (argb >> 24 & 0xFF);
 	}
 
+	public Color(Color other) {
+		this.r = other.r;
+		this.g = other.g;
+		this.b = other.b;
+		this.a = other.a;
+	}
+
 	public float toFloat() {
 		return ByteBuffer.wrap(new byte[]{a, b, g, r}, 0, 4).getFloat();
 	}

@@ -103,7 +103,7 @@ public class Renderer {
 
 		float textureId;
 
-		if (sprite.hasTexture) {
+		if (sprite.hasTexture()) {
 			textureId = submitTexture(sprite.texture);
 		} else {
 			textureId = 0;
