@@ -104,27 +104,12 @@ public class Shader {
 		glUniform4f(uniforms.get(name), vector.x, vector.y, vector.z, vector.w);
 	}
 
-	public void setMat4(String name, Matrix4f matrix) {
-		FloatBuffer buffer = FloatBuffer.allocate(16);
-		buffer.put(matrix.m00());
-		buffer.put(matrix.m01());
-		buffer.put(matrix.m02());
-		buffer.put(matrix.m03());
-		buffer.put(matrix.m10());
-		buffer.put(matrix.m11());
-		buffer.put(matrix.m12());
-		buffer.put(matrix.m13());
-		buffer.put(matrix.m20());
-		buffer.put(matrix.m21());
-		buffer.put(matrix.m22());
-		buffer.put(matrix.m23());
-		buffer.put(matrix.m30());
-		buffer.put(matrix.m31());
-		buffer.put(matrix.m32());
-		buffer.put(matrix.m33());
-		buffer.flip();
+	private static final float[] MATRIX_FLOAT_BUFFER = new float[16];
 
-		glUniformMatrix4fv(uniforms.get(name), 1, false, buffer);
+	public void setMat4(String name, Matrix4f matrix) {
+		matrix.get(MATRIX_FLOAT_BUFFER);
+
+		glUniformMatrix4fv(uniforms.get(name), 1, false, MATRIX_FLOAT_BUFFER, 0);
 	}
 
 	public void cleanUp() {
