@@ -1,17 +1,17 @@
 package fuck.it.attack;
 
 import android.opengl.GLSurfaceView;
-
-import org.joml.Matrix4f;
+import android.util.DisplayMetrics;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
+import fuck.it.attack.graphics.Color;
 import fuck.it.attack.graphics.Font;
-import fuck.it.attack.graphics.Renderer;
 import fuck.it.attack.graphics.Sprite;
 import fuck.it.attack.graphics.SpriteSheet;
 import fuck.it.attack.graphics.ui.GuiLabel;
+import fuck.it.attack.graphics.ui.GuiRenderer;
 
 import static android.opengl.GLES30.*;
 
@@ -25,7 +25,7 @@ public class MainRenderer implements GLSurfaceView.Renderer {
 	private double delta = 0;
 	private int frames = 0;
 	private int updates = 0;
-	private Renderer renderer;
+	private GuiRenderer renderer;
 	private Sprite[] sprites;
 	private SpriteSheet sheet;
 	private Font font;
@@ -38,23 +38,23 @@ public class MainRenderer implements GLSurfaceView.Renderer {
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-		renderer = new Renderer();
-		renderer.setProjectionMatrix(new Matrix4f().ortho(0, WIDTH, 0, HEIGHT, 1, -1));
+		renderer = new GuiRenderer(WIDTH, HEIGHT);
 
 		sheet = new SpriteSheet("spritesheet.png");
-		// sprites = new Sprite[4];
-		// sprites[0] = new Sprite(     0.0f   , HEIGHT / 2.0f, WIDTH / 2.0f, HEIGHT / 2.0f, sheet, 0, 0);
-		// sprites[1] = new Sprite(WIDTH / 2.0f, HEIGHT / 2.0f, WIDTH / 2.0f, HEIGHT / 2.0f, sheet, 1, 0);
-		// sprites[2] = new Sprite(     0.0f   ,      0.0f    , WIDTH / 2.0f, HEIGHT / 2.0f, sheet, 0, 1);
-		// sprites[3] = new Sprite(WIDTH / 2.0f,      0.0f    , WIDTH / 2.0f, HEIGHT / 2.0f, sheet, 1, 1);
-
 		font = new Font(sheet, "abcd", 64);
-		label = new GuiLabel(0, HEIGHT / 2, "abcd", font);
+		label = new GuiLabel("label", 0, HEIGHT / 2, "abcd", font);
+		label.setBackgroundColor(new Color(0.5f, 0.5f, 0.5f));
+		renderer.submit(label);
+
+		DisplayMetrics metrics = new DisplayMetrics();
+		MainActivity.getContext().getWindowManager().getDefaultDisplay().getMetrics(metrics);
+
 	}
 
 	@Override
 	public void onSurfaceChanged(GL10 gl, int width, int height) {
-
+		glViewport(0, 0, width, height);
+		renderer.setSurfaceSize(width, height);
 	}
 
 	@Override
@@ -93,10 +93,6 @@ public class MainRenderer implements GLSurfaceView.Renderer {
 	// as fast as possible I guess
 	public void render() {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		renderer.begin();
-		label.submit(renderer);
-		// renderer.submit(sprites);
-		renderer.end();
 		renderer.draw();
 	}
 
