@@ -49,7 +49,7 @@ public class JoystickView extends View {
 		handlePaint.setStyle(Paint.Style.FILL_AND_STROKE);
 
 		innerPadding = 10;
-		sensitivity = 10;
+		sensitivity = 1;
 	}
 
 	public void setOnJostickMovedListener(JoystickMovedListener listener) {
@@ -112,7 +112,7 @@ public class JoystickView extends View {
 			// Coordinates
 
 			if (listener != null) {
-				listener.onMoved((int) (touchX / radius * sensitivity), (int) (touchY  / radius * sensitivity));
+				listener.onMoved((float) (touchX / radius * sensitivity), (float) (touchY  / radius * sensitivity));
 			}
 
 			invalidate();
