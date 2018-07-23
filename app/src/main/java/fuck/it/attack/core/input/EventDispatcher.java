@@ -28,88 +28,116 @@ public class EventDispatcher extends GestureDetector.SimpleOnGestureListener {
 	}
 
 	public static void init(Activity activity, View view) {
-		if(instance == null) {
+		if (instance == null) {
 			new EventDispatcher(activity, view);
 			instance.detector = new GestureDetector(activity, instance);
 		}
 	}
 
+	public static void addEventListener(EventListener listener) {
+		listeners.add(listener);
+	}
+
+	public static void removeEventListener(EventListener listener) {
+		for (int i = 0; i < listeners.size(); i++) {
+			if (listeners.get(i).getName().equals(listener.getName())) {
+				listeners.remove(i);
+				break;
+			}
+		}
+	}
+
+	public static final Event e1 = new Event();
+	public static final Event e2 = new Event();
+
 	@Override
 	public boolean onSingleTapUp(MotionEvent e) {
-		for (int i=0; i < listeners.size(); i++)
-			if (listeners.get(i).onSingleTapUp(e))
+		EventDispatcher.e1.set(e);
+		for (int i = 0; i < listeners.size(); i++)
+			if (listeners.get(i).onSingleTapUp(e1))
 				return true;
 		return super.onSingleTapUp(e);
 	}
 
 	@Override
 	public void onLongPress(MotionEvent e) {
-		for (int i=0; i < listeners.size(); i++)
-			if (listeners.get(i).onLongPress(e))
+		EventDispatcher.e1.set(e);
+		for (int i = 0; i < listeners.size(); i++)
+			if (listeners.get(i).onLongPress(EventDispatcher.e1))
 				return;
 		super.onLongPress(e);
 	}
 
 	@Override
 	public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-		for (int i=0; i < listeners.size(); i++)
-			if (listeners.get(i).onScroll(e1, e2, distanceX, distanceY))
+		EventDispatcher.e1.set(e1);
+		EventDispatcher.e2.set(e2);
+		for (int i = 0; i < listeners.size(); i++)
+			if (listeners.get(i).onScroll(EventDispatcher.e1, EventDispatcher.e2, distanceX, distanceY))
 				return true;
 		return super.onScroll(e1, e2, distanceX, distanceY);
 	}
 
 	@Override
 	public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-		for (int i=0; i < listeners.size(); i++)
-			if (listeners.get(i).onFling(e1, e2, velocityX, velocityY))
+		EventDispatcher.e1.set(e1);
+		EventDispatcher.e2.set(e2);
+		for (int i = 0; i < listeners.size(); i++)
+			if (listeners.get(i).onFling(EventDispatcher.e1, EventDispatcher.e2, velocityX, velocityY))
 				return true;
 		return super.onFling(e1, e2, velocityX, velocityY);
 	}
 
 	@Override
 	public void onShowPress(MotionEvent e) {
-		for (int i=0; i < listeners.size(); i++)
-			if (listeners.get(i).onShowPress(e))
+		EventDispatcher.e1.set(e);
+		for (int i = 0; i < listeners.size(); i++)
+			if (listeners.get(i).onShowPress(EventDispatcher.e1))
 				return;
 		super.onShowPress(e);
 	}
 
 	@Override
 	public boolean onDown(MotionEvent e) {
-		for (int i=0; i < listeners.size(); i++)
-			if (listeners.get(i).onDown(e))
+		EventDispatcher.e1.set(e);
+		for (int i = 0; i < listeners.size(); i++)
+			if (listeners.get(i).onDown(EventDispatcher.e1))
 				return true;
 		return super.onDown(e);
 	}
 
 	@Override
 	public boolean onDoubleTap(MotionEvent e) {
-		for (int i=0; i < listeners.size(); i++)
-			if (listeners.get(i).onDoubleTap(e))
+		EventDispatcher.e1.set(e);
+		for (int i = 0; i < listeners.size(); i++)
+			if (listeners.get(i).onDoubleTap(EventDispatcher.e1))
 				return true;
 		return super.onDoubleTap(e);
 	}
 
 	@Override
 	public boolean onDoubleTapEvent(MotionEvent e) {
-		for (int i=0; i < listeners.size(); i++)
-			if (listeners.get(i).onDoubleTapEvent(e))
+		EventDispatcher.e1.set(e);
+		for (int i = 0; i < listeners.size(); i++)
+			if (listeners.get(i).onDoubleTapEvent(EventDispatcher.e1))
 				return true;
 		return super.onDoubleTapEvent(e);
 	}
 
 	@Override
 	public boolean onSingleTapConfirmed(MotionEvent e) {
-		for (int i=0; i < listeners.size(); i++)
-			if (listeners.get(i).onSingleTapConfirmed(e))
+		EventDispatcher.e1.set(e);
+		for (int i = 0; i < listeners.size(); i++)
+			if (listeners.get(i).onSingleTapConfirmed(EventDispatcher.e1))
 				return true;
 		return super.onSingleTapConfirmed(e);
 	}
 
 	@Override
 	public boolean onContextClick(MotionEvent e) {
-		for (int i=0; i < listeners.size(); i++)
-			if (listeners.get(i).onContextClick(e))
+		EventDispatcher.e1.set(e);
+		for (int i = 0; i < listeners.size(); i++)
+			if (listeners.get(i).onContextClick(EventDispatcher.e1))
 				return true;
 		return super.onContextClick(e);
 	}
