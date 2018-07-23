@@ -10,6 +10,8 @@ import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
+import fuck.it.attack.core.Logger;
+
 import static android.opengl.GLES30.*;
 
 public class Renderer {
@@ -101,33 +103,55 @@ public class Renderer {
 
 		float textureId;
 
-		if (sprite.hasTexture) {
+		if (sprite.hasTexture()) {
 			textureId = submitTexture(sprite.texture);
 		} else {
 			textureId = 0;
 		}
 
-		vboData.put(new float[]{sprite.x, sprite.y, 0});
-		vboData.put(new float[]{uv1.x, uv1.y});
-		vboData.put(new float[]{sprite.getColorFloat()});
-		vboData.put(new float[]{textureId});
+		vboData.put(sprite.x);
+		vboData.put(sprite.y);
+		vboData.put(0);
+		vboData.put(uv1.x);
+		vboData.put(uv1.y);
+		vboData.put(sprite.getColorFloat());
+		vboData.put(textureId);
 
-		vboData.put(new float[]{sprite.x + sprite.width, sprite.y, 0});
-		vboData.put(new float[]{uv2.x, uv1.y});
-		vboData.put(new float[]{sprite.getColorFloat()});
-		vboData.put(new float[]{textureId});
+		vboData.put(sprite.x + sprite.width);
+		vboData.put(sprite.y);
+		vboData.put(0);
+		vboData.put(uv2.x);
+		vboData.put(uv1.y);
+		vboData.put(sprite.getColorFloat());
+		vboData.put(textureId);
 
-		vboData.put(new float[]{sprite.x + sprite.width, sprite.y + sprite.height, 0});
-		vboData.put(new float[]{uv2.x, uv2.y});
-		vboData.put(new float[]{sprite.getColorFloat()});
-		vboData.put(new float[]{textureId});
+		vboData.put(sprite.x + sprite.width);
+		vboData.put(sprite.y + sprite.height);
+		vboData.put(0);
+		vboData.put(uv2.x);
+		vboData.put(uv2.y);
+		vboData.put(sprite.getColorFloat());
+		vboData.put(textureId);
 
-		vboData.put(new float[]{sprite.x, sprite.y + sprite.height, 0});
-		vboData.put(new float[]{uv1.x, uv2.y});
-		vboData.put(new float[]{sprite.getColorFloat()});
-		vboData.put(new float[]{textureId});
+		vboData.put(sprite.x);
+		vboData.put(sprite.y + sprite.height);
+		vboData.put(0);
+		vboData.put(uv1.x);
+		vboData.put(uv2.y);
+		vboData.put(sprite.getColorFloat());
+		vboData.put(textureId);
 
 		indicesCount += 6;
+	}
+
+	public void submitText(String text, int x, int y, Font font) {
+		for(char c : text.toCharArray()) {
+			Sprite sprite = font.getCharSprite(c);
+			sprite.x = x;
+			sprite.y = y;
+			submit(sprite);
+			x += font.getSize() + 1;
+		}
 	}
 
 	public void submit(Sprite[] sprites) {

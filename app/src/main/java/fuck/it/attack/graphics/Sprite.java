@@ -8,10 +8,21 @@ public class Sprite {
 	public float width, height;
 	public Color color;
 	public Texture texture;
-	public boolean hasTexture = false;
 
 	private Vector2f uv1;
 	private Vector2f uv2;
+
+	public Sprite(Sprite other) {
+		this.x = other.x;
+		this.y = other.y;
+		this.width = other.width;
+		this.height = other.height;
+
+		if(other.color != null) this.color = new Color(other.color);
+		if(other.texture != null) this.texture = other.texture;
+		if(other.uv1 != null) this.uv1 = new Vector2f(other.uv1);
+		if(other.uv2 != null) this.uv2 = new Vector2f(other.uv2);
+	}
 
 	public Sprite(float x, float y, float width, float height) {
 		this.x = x;
@@ -25,30 +36,29 @@ public class Sprite {
 	public Sprite(float x, float y, float width, float height, Color color) {
 		this(x, y, width, height);
 		this.color = color;
-		hasTexture = false;
 	}
 
 	public Sprite(float x, float y, float width, float height, Texture texture) {
 		this(x, y, width, height);
 		this.texture = texture;
-		hasTexture = true;
 	}
 
 	public Sprite(float x, float y, float width, float height, SpriteSheet sheet, int spritePosX, int spritePosY) {
 		this(x, y, width, height, sheet.getTexture());
 		uv1 = sheet.getUv1(spritePosX, spritePosY);
 		uv2 = sheet.getUv2(spritePosX, spritePosY);
-		hasTexture = true;
 	}
 
 	public void setColor(Color color) {
 		this.color = color;
-		hasTexture = false;
 	}
 
 	public void setTexture(Texture texture) {
 		this.texture = texture;
-		hasTexture = true;
+	}
+
+	public final boolean hasTexture() {
+		return texture != null;
 	}
 
 	public Vector2f getUv1() {
