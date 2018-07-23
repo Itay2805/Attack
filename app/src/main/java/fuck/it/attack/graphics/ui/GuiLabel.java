@@ -25,7 +25,6 @@ public class GuiLabel extends GuiElement {
 	public boolean onDown(Event e) {
 		// no need for checking if it's inside the bounds since if it's not in the bounds
 		// then it won't be called
-		Logger.error("Click! " + e.x + " " + e.y);
 		return true;
 	}
 }
