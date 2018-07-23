@@ -16,8 +16,6 @@ public class EventDispatcher extends GestureDetector.SimpleOnGestureListener {
 	private GestureDetector detector;
 
 	private EventDispatcher(Activity activity, View view) {
-		detector = new GestureDetector(activity, instance);
-
 		view.setOnTouchListener(new View.OnTouchListener() {
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
@@ -32,6 +30,7 @@ public class EventDispatcher extends GestureDetector.SimpleOnGestureListener {
 	public static void init(Activity activity, View view) {
 		if(instance == null) {
 			new EventDispatcher(activity, view);
+			instance.detector = new GestureDetector(activity, instance);
 		}
 	}
 
