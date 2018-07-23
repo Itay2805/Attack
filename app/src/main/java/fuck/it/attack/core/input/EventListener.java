@@ -1,46 +1,54 @@
 package fuck.it.attack.core.input;
 
-import android.view.MotionEvent;
-
 public class EventListener {
 
-	public boolean onSingleTapUp(MotionEvent e) {
+	private String name;
+
+	protected EventListener(String name) {
+		this.name = name;
+	}
+
+	public boolean onSingleTapUp(Event e) {
 		return false;
 	}
 
-	public boolean onLongPress(MotionEvent e) {
+	public boolean onLongPress(Event e) {
 		return false;
 	}
 
-	public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+	public boolean onScroll(Event e1, Event e2, float distanceX, float distanceY) {
 		return false;
 	}
 
-	public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+	public boolean onFling(Event e1, Event e2, float velocityX, float velocityY) {
 		return false;
 	}
 
-	public boolean onShowPress(MotionEvent e) {
+	public boolean onShowPress(Event e) {
 		return false;
 	}
 
-	public boolean onDown(MotionEvent e) {
+	public boolean onDown(Event e) {
 		return false;
 	}
 
-	public boolean onDoubleTap(MotionEvent e) {
+	public boolean onDoubleTap(Event e) {
 		return false;
 	}
 
-	public boolean onDoubleTapEvent(MotionEvent e) {
+	public boolean onDoubleTapEvent(Event e) {
 		return false;
 	}
 
-	public boolean onSingleTapConfirmed(MotionEvent e) {
+	public boolean onSingleTapConfirmed(Event e) {
 		return false;
 	}
 
-	public boolean onContextClick(MotionEvent e) {
+	public boolean onContextClick(Event e) {
 		return false;
+	}
+
+	public String getName() {
+		return name;
 	}
 }
