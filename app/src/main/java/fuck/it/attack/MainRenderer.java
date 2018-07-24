@@ -52,7 +52,7 @@ public class MainRenderer implements GLSurfaceView.Renderer {
 		spriteSheet = new SpriteSheet("spritesheet.png");
 		spriteSheet2 = new SpriteSheet("rainbow.png");
 
-		animatedSprite = new AnimatedSprite(WIDTH / 2, HEIGHT / 2, 64.0f, 64.0f, spriteSheet2, 0,0, 16);
+		animatedSprite = new AnimatedSprite(WIDTH / 2, HEIGHT / 2, 64.0f, 64.0f, spriteSheet2, 0, 0, 16);
 
 		Font font = new Font(spriteSheet, "abcd", 64);
 		GuiLabel label = new GuiLabel("label", 0, HEIGHT / 2, "abcd", font);
@@ -87,7 +87,7 @@ public class MainRenderer implements GLSurfaceView.Renderer {
 	public void onDrawFrame(GL10 gl) {
 		long now = System.nanoTime();
 		delta += (now - lastTime) / ns;
-		nsLastFrame = (float)(now - lastTime) / 1000000000.0f;
+		nsLastFrame = (float) (now - lastTime) / 1000000000.0f;
 		lastTime = now;
 
 		while (delta >= 1) {
@@ -115,7 +115,7 @@ public class MainRenderer implements GLSurfaceView.Renderer {
 
 	// 60 times a second
 	public void update(double delta) {
-		camera.update((float)delta);
+		camera.update((float) delta);
 	}
 
 	// as fast as possible I guess

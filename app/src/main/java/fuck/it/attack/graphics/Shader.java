@@ -17,6 +17,8 @@ import static android.opengl.GLES30.*;
 
 public class Shader {
 
+	private static int currentProgramBound = -1;
+
 	private int programId;
 
 	private HashMap<String, Integer> uniforms = new HashMap<>();
@@ -77,11 +79,15 @@ public class Shader {
 	}
 
 	public void start() {
-		glUseProgram(programId);
+		if(currentProgramBound != programId) {
+			glUseProgram(programId);
+			currentProgramBound = programId;
+		}
 	}
 
 	public void stop() {
 		glUseProgram(0);
+		currentProgramBound = -1;
 	}
 
 	public void setFloat(String name, float v) {
