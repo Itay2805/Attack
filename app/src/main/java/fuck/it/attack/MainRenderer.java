@@ -1,17 +1,22 @@
 package fuck.it.attack;
 
 import android.opengl.GLSurfaceView;
-import android.util.DisplayMetrics;
+
+import org.joml.Matrix4f;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
+import fuck.it.attack.graphics.AnimatedSprite;
+import fuck.it.attack.graphics.Camera;
 import fuck.it.attack.graphics.Color;
 import fuck.it.attack.graphics.Font;
+import fuck.it.attack.graphics.Renderer;
 import fuck.it.attack.graphics.Sprite;
 import fuck.it.attack.graphics.SpriteSheet;
 import fuck.it.attack.graphics.ui.GuiLabel;
 import fuck.it.attack.graphics.ui.GuiRenderer;
+import fuck.it.attack.joystick.JoystickMovedListener;
 
 import static android.opengl.GLES30.*;
 
@@ -23,13 +28,17 @@ public class MainRenderer implements GLSurfaceView.Renderer {
 	private long lastTime = System.nanoTime();
 	private long timer = System.currentTimeMillis();
 	private double delta = 0;
+	private float nsLastFrame = 0;
 	private int frames = 0;
 	private int updates = 0;
+
 	private GuiRenderer renderer;
-	private Sprite[] sprites;
-	private SpriteSheet sheet;
-	private Font font;
-	private GuiLabel label;
+	private Renderer worldRenderer;
+	private Camera camera;
+	private Sprite sprite;
+	private AnimatedSprite animatedSprite;
+	private SpriteSheet spriteSheet;
+	private SpriteSheet spriteSheet2;
 
 	@Override
 	public void onSurfaceCreated(GL10 gl, EGLConfig config) {
@@ -40,15 +49,32 @@ public class MainRenderer implements GLSurfaceView.Renderer {
 
 		renderer = new GuiRenderer(WIDTH, HEIGHT);
 
-		sheet = new SpriteSheet("spritesheet.png");
-		font = new Font(sheet, "abcd", 64);
-		label = new GuiLabel("label", 0, HEIGHT / 2, "abcd", font);
+		spriteSheet = new SpriteSheet("spritesheet.png");
+		spriteSheet2 = new SpriteSheet("rainbow.png");
+
+		animatedSprite = new AnimatedSprite(WIDTH / 2, HEIGHT / 2, 64.0f, 64.0f, spriteSheet2, 0,0, 16);
+
+		Font font = new Font(spriteSheet, "abcd", 64);
+		GuiLabel label = new GuiLabel("label", 0, HEIGHT / 2, "abcd", font);
 		label.setBackgroundColor(new Color(0.5f, 0.5f, 0.5f));
 		renderer.submit(label);
 
-		DisplayMetrics metrics = new DisplayMetrics();
-		MainActivity.getContext().getWindowManager().getDefaultDisplay().getMetrics(metrics);
+		worldRenderer = new Renderer();
+		worldRenderer.setProjectionMatrix(new Matrix4f().ortho(0, WIDTH, 0, HEIGHT, 1.0f, -1.0f));
+		camera = new Camera();
+		camera.setMoveFactor(64.0f * 5.0f, 64.0f * 5.0f); // 5 sprites per second, a sprite is 64 units
 
+		MainActivity.getRightJoystick().setOnJostickMovedListener(new JoystickMovedListener() {
+			@Override
+			public void onMoved(float pan, float tilt) {
+				camera.setMove(pan, tilt);
+			}
+
+			@Override
+			public void onReleased() {
+				camera.setMove(0, 0);
+			}
+		});
 	}
 
 	@Override
@@ -61,10 +87,11 @@ public class MainRenderer implements GLSurfaceView.Renderer {
 	public void onDrawFrame(GL10 gl) {
 		long now = System.nanoTime();
 		delta += (now - lastTime) / ns;
+		nsLastFrame = (float)(now - lastTime) / 1000000000.0f;
 		lastTime = now;
 
 		while (delta >= 1) {
-			update();
+			update(nsLastFrame);
 			updates++;
 			delta--;
 		}
@@ -82,21 +109,31 @@ public class MainRenderer implements GLSurfaceView.Renderer {
 
 	// once a second
 	public void tick() {
+		animatedSprite.nextAnimation();
 
 	}
 
 	// 60 times a second
-	public void update() {
-
+	public void update(double delta) {
+		camera.update((float)delta);
 	}
 
 	// as fast as possible I guess
 	public void render() {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		renderer.draw();
+
+		worldRenderer.setViewMatrix(camera.getViewMatrix());
+		worldRenderer.begin();
+		worldRenderer.submit(animatedSprite);
+		worldRenderer.end();
+		worldRenderer.draw();
 	}
 
 	public void cleanUp() {
 		renderer.cleanUp();
+		worldRenderer.cleanUp();
+		spriteSheet.cleanUp();
+		spriteSheet2.cleanUp();
 	}
 }

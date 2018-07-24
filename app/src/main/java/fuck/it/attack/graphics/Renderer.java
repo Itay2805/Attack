@@ -223,4 +223,10 @@ public class Renderer {
 		shader.stop();
 	}
 
+	public void setViewMatrix(Matrix4f viewMatrix) {
+		shader.start();
+		shader.setMat4("viewMatrix", viewMatrix);
+		shader.stop();
+	}
+
 }

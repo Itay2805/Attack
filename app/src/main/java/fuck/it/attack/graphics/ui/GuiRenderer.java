@@ -25,6 +25,7 @@ public class GuiRenderer extends EventListener {
 		this.height = height;
 		renderer = new Renderer();
 		renderer.setProjectionMatrix(new Matrix4f().ortho(0, width, 0, height, 1, -1));
+		renderer.setViewMatrix(new Matrix4f()); // no view matrix needed for gui (duh)
 	}
 
 	public void submit(GuiElement element) {
