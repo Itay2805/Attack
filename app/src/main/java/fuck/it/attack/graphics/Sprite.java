@@ -9,8 +9,8 @@ public class Sprite {
 	public Color color;
 	public Texture texture;
 
-	private Vector2f uv1;
-	private Vector2f uv2;
+	protected Vector2f uv1;
+	protected Vector2f uv2;
 
 	public Sprite(Sprite other) {
 		this.x = other.x;
