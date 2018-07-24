@@ -183,10 +183,6 @@ public class Renderer {
 		}
 
 		glDrawElements(GL_TRIANGLES, indicesCount, GL_UNSIGNED_INT, 0);
-
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-		glBindVertexArray(0);
 	}
 
 	public void cleanUp() {
@@ -220,13 +216,11 @@ public class Renderer {
 	public void setProjectionMatrix(Matrix4f projectionMatrix) {
 		shader.start();
 		shader.setMat4("projectionMatrix", projectionMatrix);
-		shader.stop();
 	}
 
 	public void setViewMatrix(Matrix4f viewMatrix) {
 		shader.start();
 		shader.setMat4("viewMatrix", viewMatrix);
-		shader.stop();
 	}
 
 }
