@@ -7,7 +7,7 @@ import org.joml.Matrix4f;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-import fuck.it.attack.core.Logger;
+import fuck.it.attack.graphics.AnimatedSprite;
 import fuck.it.attack.graphics.Camera;
 import fuck.it.attack.graphics.Color;
 import fuck.it.attack.graphics.Font;
@@ -36,9 +36,9 @@ public class MainRenderer implements GLSurfaceView.Renderer {
 	private Renderer worldRenderer;
 	private Camera camera;
 	private Sprite sprite;
-	private SpriteSheet sheet;
-	private Font font;
-	private GuiLabel label;
+	private AnimatedSprite animatedSprite;
+	private SpriteSheet spriteSheet;
+	private SpriteSheet spriteSheet2;
 
 	@Override
 	public void onSurfaceCreated(GL10 gl, EGLConfig config) {
@@ -49,12 +49,13 @@ public class MainRenderer implements GLSurfaceView.Renderer {
 
 		renderer = new GuiRenderer(WIDTH, HEIGHT);
 
-		sheet = new SpriteSheet("spritesheet.png");
+		spriteSheet = new SpriteSheet("spritesheet.png");
+		spriteSheet2 = new SpriteSheet("rainbow.png");
 
-		sprite = new Sprite(WIDTH / 2, HEIGHT / 2, 64.0f, 64.0f, new Color(0,0,0));
+		animatedSprite = new AnimatedSprite(WIDTH / 2, HEIGHT / 2, 64.0f, 64.0f, spriteSheet2, 0,0, 16);
 
-		font = new Font(sheet, "abcd", 64);
-		label = new GuiLabel("label", 0, HEIGHT / 2, "abcd", font);
+		Font font = new Font(spriteSheet, "abcd", 64);
+		GuiLabel label = new GuiLabel("label", 0, HEIGHT / 2, "abcd", font);
 		label.setBackgroundColor(new Color(0.5f, 0.5f, 0.5f));
 		renderer.submit(label);
 
@@ -108,6 +109,7 @@ public class MainRenderer implements GLSurfaceView.Renderer {
 
 	// once a second
 	public void tick() {
+		animatedSprite.nextAnimation();
 
 	}
 
@@ -123,7 +125,7 @@ public class MainRenderer implements GLSurfaceView.Renderer {
 
 		worldRenderer.setViewMatrix(camera.getViewMatrix());
 		worldRenderer.begin();
-		worldRenderer.submit(sprite);
+		worldRenderer.submit(animatedSprite);
 		worldRenderer.end();
 		worldRenderer.draw();
 	}
@@ -131,5 +133,7 @@ public class MainRenderer implements GLSurfaceView.Renderer {
 	public void cleanUp() {
 		renderer.cleanUp();
 		worldRenderer.cleanUp();
+		spriteSheet.cleanUp();
+		spriteSheet2.cleanUp();
 	}
 }
