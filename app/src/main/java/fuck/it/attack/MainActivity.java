@@ -34,16 +34,16 @@ public class MainActivity extends Activity {
 	public static final int SIGN_IN_RESULT = 9001;
 	private static MainActivity context;
 	private static JoystickView rightJoystick;
-	private static JoystickView leftJoystick;
+	//private static JoystickView leftJoystick;
 	private static GoogleSignInAccount googleSignInAccount;
 	private static GoogleSignInOptions googleSignInOptions;
 	private static GoogleSignInClient googleSignInClient;
 	private MainRenderer mainRenderer;
 	private MainSurfaceView mainSurfaceView;
 
-	public static JoystickView getLeftJoystick() {
+	/*public static JoystickView getLeftJoystick() {
 		return leftJoystick;
-	}
+	}*/
 
 	public static JoystickView getRightJoystick() {
 		return rightJoystick;
@@ -73,7 +73,7 @@ public class MainActivity extends Activity {
 			mainSurfaceView.setEGLContextClientVersion(3);
 			mainSurfaceView.setRenderer(mainRenderer);
 
-			leftJoystick = new JoystickView(context);
+			//leftJoystick = new JoystickView(context);
 			rightJoystick = new JoystickView(context);
 
 			DisplayMetrics display = new DisplayMetrics();
@@ -83,9 +83,9 @@ public class MainActivity extends Activity {
 
 			int size = display.widthPixels / 5;
 
-			FrameLayout.LayoutParams leftLayoutParams = new FrameLayout.LayoutParams(size, size);
-			leftLayoutParams.setMargins(20, display.heightPixels - size - 20, 0, 0);
-			leftJoystick.setLayoutParams(leftLayoutParams);
+			//FrameLayout.LayoutParams leftLayoutParams = new FrameLayout.LayoutParams(size, size);
+			//leftLayoutParams.setMargins(20, display.heightPixels - size - 20, 0, 0);
+			//leftJoystick.setLayoutParams(leftLayoutParams);
 
 			FrameLayout.LayoutParams rightLayoutParams = new FrameLayout.LayoutParams(size, size);
 			rightLayoutParams.setMargins(display.widthPixels - size - 20, display.heightPixels - size - 20, 0, 0);
@@ -93,7 +93,7 @@ public class MainActivity extends Activity {
 
 			FrameLayout layout = new FrameLayout(context);
 			layout.addView(mainSurfaceView);
-			layout.addView(leftJoystick);
+			//layout.addView(leftJoystick);
 			layout.addView(rightJoystick);
 
 			context.setContentView(layout);
