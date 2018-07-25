@@ -21,25 +21,26 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.games.Games;
+import com.google.android.gms.games.GamesClient;
+import com.google.android.gms.signin.SignIn;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
 import fuck.it.attack.core.FileUtils;
 import fuck.it.attack.core.Logger;
 import fuck.it.attack.core.input.EventDispatcher;
+import fuck.it.attack.googlePlayServices.SignInHelper;
+import fuck.it.attack.graphics.Color;
 import fuck.it.attack.joystick.JoystickView;
 
 public class MainActivity extends Activity {
 
-	public static final int SIGN_IN_RESULT = 9001;
 	private static MainActivity context;
 	private static JoystickView rightJoystick;
 	//private static JoystickView leftJoystick;
-	private static GoogleSignInAccount googleSignInAccount;
-	private static GoogleSignInOptions googleSignInOptions;
-	private static GoogleSignInClient googleSignInClient;
-	private MainRenderer mainRenderer;
-	private MainSurfaceView mainSurfaceView;
+	private static MainRenderer mainRenderer;
+	private static MainSurfaceView mainSurfaceView;
 
 	/*public static JoystickView getLeftJoystick() {
 		return leftJoystick;
@@ -53,6 +54,10 @@ public class MainActivity extends Activity {
 		return context;
 	}
 
+	public static MainSurfaceView getMainSurfaceView() {
+		return mainSurfaceView;
+	}
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -63,6 +68,8 @@ public class MainActivity extends Activity {
 		context.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
 		FileUtils.assetManager = getAssets();
+
+		Color.loadColors();
 
 		ActivityManager am = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
 		ConfigurationInfo info = am.getDeviceConfigurationInfo();
@@ -97,6 +104,8 @@ public class MainActivity extends Activity {
 			layout.addView(rightJoystick);
 
 			context.setContentView(layout);
+
+			SignInHelper.setPopupsView(layout);
 		} else {
 			new AlertDialog.Builder(context).setMessage("Your device doesn't support ES3. (\" + info.reqGlEsVersion + \")").setNeutralButton("Exit", new DialogInterface.OnClickListener() {
 				@Override
@@ -106,53 +115,26 @@ public class MainActivity extends Activity {
 			}).show();
 		}
 
-		googleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build();
-
-		googleSignInClient = GoogleSignIn.getClient(this, googleSignInOptions);
-
 		EventDispatcher.init(this, mainSurfaceView);
 	}
 
 	@Override
 	protected void onStart() {
 		super.onStart();
-
-		if (GoogleSignIn.getLastSignedInAccount(this) != null) {
-			Task<GoogleSignInAccount> task = googleSignInClient.silentSignIn();
-			task.addOnCompleteListener(this, new OnCompleteListener<GoogleSignInAccount>() {
-				@Override
-				public void onComplete(@NonNull Task<GoogleSignInAccount> task) {
-					if (task.isSuccessful()) {
-						Logger.info("Log in successful!");
-					} else {
-						Logger.error("Log in failed!");
-						ApiException e = (ApiException) task.getException();
-						Logger.error("Status code: " + e.getStatusCode() + "\nStack trace: " + e.getStackTrace().toString());
-						explicitSignIn();
-					}
-				}
-			});
-		} else {
-			explicitSignIn();
-		}
+		SignInHelper.signIn();
 	}
 
 	@Override
 	protected void onResume() {
 		super.onResume();
+		SignInHelper.silentSignIn();
 	}
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
-		if (requestCode == SIGN_IN_RESULT) {
-			GoogleSignInResult googleSignInResult = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-			if (googleSignInResult.isSuccess()) {
-				googleSignInAccount = googleSignInResult.getSignInAccount();
-				Logger.info("Sign in successful! Welcome, " + googleSignInAccount.getDisplayName());
-			} else {
-				Logger.error("Could not log in " + googleSignInResult.getStatus().toString());
-			}
+		if (requestCode == SignInHelper.RC_SIGN_IN) {
+			SignInHelper.signInResult(Auth.GoogleSignInApi.getSignInResultFromIntent(data));
 		}
 	}
 
@@ -162,8 +144,4 @@ public class MainActivity extends Activity {
 		mainRenderer.cleanUp();
 	}
 
-	private void explicitSignIn() {
-		Intent intent = googleSignInClient.getSignInIntent();
-		startActivityForResult(intent, SIGN_IN_RESULT);
-	}
 }

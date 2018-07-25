@@ -9,7 +9,7 @@ public class Logger {
 	public static void error(Object... messages) {
 		String str = "";
 		for(Object obj : messages) {
-			str += obj.toString();
+			str += obj;
 		}
 		Log.e(TAG, str);
 	}
@@ -17,7 +17,7 @@ public class Logger {
 	public static void info(Object... messages) {
 		String str = "";
 		for(Object obj : messages) {
-			str += obj.toString();
+			str += obj;
 		}
 		Log.i(TAG, str);
 	}
@@ -25,7 +25,7 @@ public class Logger {
 	public static void warn(Object... messages) {
 		String str = "";
 		for(Object obj : messages) {
-			str += obj.toString();
+			str += obj;
 		}
 		Log.w(TAG, str);
 	}
@@ -33,7 +33,7 @@ public class Logger {
 	public static void msg(Object... messages) {
 		String str = "";
 		for(Object obj : messages) {
-			str += obj.toString();
+			str += obj;
 		}
 		Log.v(TAG, str);
 	}
@@ -41,7 +41,7 @@ public class Logger {
 	public static void debug(Object... messages) {
 		String str = "";
 		for(Object obj : messages) {
-			str += obj.toString();
+			str += obj;
 		}
 		Log.d(TAG, str);
 	}
