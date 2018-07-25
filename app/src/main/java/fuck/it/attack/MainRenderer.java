@@ -4,14 +4,17 @@ import android.opengl.GLSurfaceView;
 
 import org.joml.Matrix4f;
 
+import java.util.Random;
+
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-import fuck.it.attack.graphics.sprite.AnimatedSprite;
 import fuck.it.attack.graphics.Camera;
 import fuck.it.attack.graphics.Color;
 import fuck.it.attack.graphics.Font;
 import fuck.it.attack.graphics.Renderer;
+import fuck.it.attack.graphics.TileMap;
+import fuck.it.attack.graphics.sprite.AnimatedSprite;
 import fuck.it.attack.graphics.sprite.Sprite;
 import fuck.it.attack.graphics.sprite.SpriteSheet;
 import fuck.it.attack.graphics.ui.GuiLabel;
@@ -39,6 +42,8 @@ public class MainRenderer implements GLSurfaceView.Renderer {
 	private AnimatedSprite animatedSprite;
 	private SpriteSheet spriteSheet;
 	private SpriteSheet spriteSheet2;
+
+	private TileMap tileMap;
 
 	@Override
 	public void onSurfaceCreated(GL10 gl, EGLConfig config) {
@@ -75,6 +80,21 @@ public class MainRenderer implements GLSurfaceView.Renderer {
 				camera.setMove(0, 0);
 			}
 		});
+
+		Sprite sprites[] = new Sprite[3];
+		sprites[0] = new Sprite(0, 0, 0, 0, new Color(0, 0.4f, 0.2f));
+		sprites[1] = new Sprite(0, 0, 0, 0, new Color(1f, 0.4f, 0.8f));
+		sprites[2] = new Sprite(0, 0, 0, 0, new Color(0.4f, 0.2f, 0.9f));
+		tileMap = new TileMap(sprites, 64, 64);
+
+		int tileIds[] = new int[64 * 64];
+		Random random = new Random();
+
+		for(int i=0; i < 64 * 64; i++) {
+			tileIds[i] = random.nextInt(3);
+		}
+
+		tileMap.setTileIds(tileIds);
 	}
 
 	@Override
@@ -126,6 +146,7 @@ public class MainRenderer implements GLSurfaceView.Renderer {
 		worldRenderer.setViewMatrix(camera.getViewMatrix());
 		worldRenderer.begin();
 		worldRenderer.submit(animatedSprite);
+		worldRenderer.submit(tileMap, camera, WIDTH, HEIGHT);
 		worldRenderer.end();
 		worldRenderer.draw();
 	}

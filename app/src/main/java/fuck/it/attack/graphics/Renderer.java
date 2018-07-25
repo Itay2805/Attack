@@ -10,6 +10,7 @@ import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
+import fuck.it.attack.core.Logger;
 import fuck.it.attack.graphics.sprite.Sprite;
 
 import static android.opengl.GLES30.*;
@@ -145,7 +146,7 @@ public class Renderer {
 	}
 
 	public void submitText(String text, int x, int y, Font font) {
-		for(char c : text.toCharArray()) {
+		for (char c : text.toCharArray()) {
 			Sprite sprite = font.getCharSprite(c);
 			sprite.x = x;
 			sprite.y = y;
@@ -155,15 +156,92 @@ public class Renderer {
 	}
 
 	public void submit(Sprite[] sprites) {
-		for(int i=0; i < sprites.length; i++){
+		for (int i = 0; i < sprites.length; i++) {
 			submit(sprites[i]);
 		}
 	}
 
 	public void submit(List<Sprite> sprites) {
-		for(int i=0; i < sprites.size(); i++){
+		for (int i = 0; i < sprites.size(); i++) {
 			submit(sprites.get(i));
 		}
+	}
+
+	// The camera needs to be passed here in order to ensure the culling of the tilemap.
+	public void submit(TileMap tileMap, Camera camera, int screenWidth, int screenHeight) {
+		Sprite sprites[] = tileMap.getSprites();
+		int tiles[] = tileMap.getTiles();
+
+		float textureId[] = new float[sprites.length];
+
+		for (int i = 0; i < sprites.length; i++) {
+			if (sprites[i].hasTexture())
+				textureId[i] = submitTexture(sprites[i].texture);
+		}
+
+		Vector2f position = camera.getPosition();
+
+		int scrollX = (int) position.x + (int) (tileMap.getPlayerX() * TileMap.TILE_SIZE);
+		int scrollY = (int) position.y + (int) (tileMap.getPlayerY() * TileMap.TILE_SIZE);
+
+		int tileScrollX = (int)position.x % (int)TileMap.TILE_SIZE;
+		int tileScrollY = (int)position.y % (int)TileMap.TILE_SIZE;
+
+		Logger.debug("TileScrollX: " + tileScrollX + " TileScrollY: " + tileScrollY);
+
+		int maxCountX = (int) (screenWidth / TileMap.TILE_SIZE + 2);
+		int maxCountY = (int) (screenHeight / TileMap.TILE_SIZE + 2);
+
+		int middleTileX = Math.max(Math.min((int) (scrollX / TileMap.TILE_SIZE), tileMap.getWidth() - maxCountX / 2 - 1), maxCountX / 2 + 1);
+		int middleTileY = Math.max(Math.min((int) (scrollY / TileMap.TILE_SIZE), tileMap.getHeight() - maxCountY / 2 - 1), maxCountY / 2 + 1);
+
+		for (int y = -maxCountY / 2 - 1; y <= maxCountY / 2 + 1; y++) {
+			for (int x = -maxCountX / 2 - 1; x <= maxCountX / 2 + 1; x++) {
+				final int currentTileId = tiles[x + middleTileX + (y + middleTileY) * tileMap.getWidth()];
+				Vector2f uv1 = sprites[currentTileId].getUv1();
+				Vector2f uv2 = sprites[currentTileId].getUv2();
+
+				float tileX = -position.x + ((float) maxCountX / 2.0f + (float) x) * TileMap.TILE_SIZE - tileScrollX;
+				float tileY = -position.y + ((float) maxCountY / 2.0f + (float) y) * TileMap.TILE_SIZE - tileScrollY;
+
+				//Logger.debug("TileX: " + tileX + " TileY: " + tileY);
+
+				vboData.put(tileX);
+				vboData.put(tileY);
+				vboData.put(0);
+				vboData.put(uv1.x);
+				vboData.put(uv1.y);
+				vboData.put(sprites[currentTileId].getColorFloat());
+				vboData.put(textureId[currentTileId]);
+
+				vboData.put(tileX + TileMap.TILE_SIZE);
+				vboData.put(tileY);
+				vboData.put(0);
+				vboData.put(uv2.x);
+				vboData.put(uv1.y);
+				vboData.put(sprites[currentTileId].getColorFloat());
+				vboData.put(textureId[currentTileId]);
+
+				vboData.put(tileX + TileMap.TILE_SIZE);
+				vboData.put(tileY + TileMap.TILE_SIZE);
+				vboData.put(0);
+				vboData.put(uv2.x);
+				vboData.put(uv2.y);
+				vboData.put(sprites[currentTileId].getColorFloat());
+				vboData.put(textureId[currentTileId]);
+
+				vboData.put(tileX);
+				vboData.put(tileY + TileMap.TILE_SIZE);
+				vboData.put(0);
+				vboData.put(uv1.x);
+				vboData.put(uv2.y);
+				vboData.put(sprites[currentTileId].getColorFloat());
+				vboData.put(textureId[currentTileId]);
+
+				indicesCount += 6;
+			}
+		}
+
 	}
 
 	public void end() {
@@ -177,7 +255,7 @@ public class Renderer {
 		glBindBuffer(GL_ARRAY_BUFFER, vbo);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
 
-		for(int i=0; i < textures.size(); i++) {
+		for (int i = 0; i < textures.size(); i++) {
 			glActiveTexture(GL_TEXTURE0 + i);
 			textures.get(i).bind();
 		}
