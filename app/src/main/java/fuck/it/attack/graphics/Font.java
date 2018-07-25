@@ -1,5 +1,8 @@
 package fuck.it.attack.graphics;
 
+import fuck.it.attack.graphics.sprite.Sprite;
+import fuck.it.attack.graphics.sprite.SpriteSheet;
+
 public class Font {
 
     private SpriteSheet sheet;

@@ -1,4 +1,7 @@
-package fuck.it.attack.graphics;
+package fuck.it.attack.graphics.sprite;
+
+import fuck.it.attack.graphics.sprite.Sprite;
+import fuck.it.attack.graphics.sprite.SpriteSheet;
 
 public class AnimatedSprite extends Sprite {
 

@@ -10,7 +10,7 @@ import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-import fuck.it.attack.core.Logger;
+import fuck.it.attack.graphics.sprite.Sprite;
 
 import static android.opengl.GLES30.*;
 

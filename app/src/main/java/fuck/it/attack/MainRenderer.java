@@ -7,13 +7,13 @@ import org.joml.Matrix4f;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-import fuck.it.attack.graphics.AnimatedSprite;
+import fuck.it.attack.graphics.sprite.AnimatedSprite;
 import fuck.it.attack.graphics.Camera;
 import fuck.it.attack.graphics.Color;
 import fuck.it.attack.graphics.Font;
 import fuck.it.attack.graphics.Renderer;
-import fuck.it.attack.graphics.Sprite;
-import fuck.it.attack.graphics.SpriteSheet;
+import fuck.it.attack.graphics.sprite.Sprite;
+import fuck.it.attack.graphics.sprite.SpriteSheet;
 import fuck.it.attack.graphics.ui.GuiLabel;
 import fuck.it.attack.graphics.ui.GuiRenderer;
 import fuck.it.attack.joystick.JoystickMovedListener;

@@ -1,6 +1,9 @@
-package fuck.it.attack.graphics;
+package fuck.it.attack.graphics.sprite;
 
 import org.joml.Vector2f;
+
+import fuck.it.attack.graphics.Color;
+import fuck.it.attack.graphics.Texture;
 
 public class Sprite {
 

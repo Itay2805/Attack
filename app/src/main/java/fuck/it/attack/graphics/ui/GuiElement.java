@@ -9,7 +9,7 @@ import fuck.it.attack.core.input.Event;
 import fuck.it.attack.core.input.EventListener;
 import fuck.it.attack.graphics.Color;
 import fuck.it.attack.graphics.Renderer;
-import fuck.it.attack.graphics.Sprite;
+import fuck.it.attack.graphics.sprite.Sprite;
 
 public class GuiElement extends EventListener {
 
