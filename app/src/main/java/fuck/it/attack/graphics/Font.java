@@ -3,29 +3,17 @@ package fuck.it.attack.graphics;
 public class Font {
 
     private SpriteSheet sheet;
-    private Sprite[] chars;
     private String charset;
-    private int size;
-
-    public Font(SpriteSheet sheet, String charset, int size) {
-        this.sheet = sheet;
-        this.charset = charset;
-        this.size = size;
-
-        chars = new Sprite[charset.length()];
-        for(int i = 0; i < charset.length(); i++) {
-            chars[i] = getCharSprite(i);
-        }
-    }
 
     public Font(SpriteSheet sheet, String charset) {
-        this(sheet, charset, SpriteSheet.SPRITE_SIZE_WIDTH);
+        this.sheet = sheet;
+        this.charset = charset;
     }
 
     private Sprite getCharSprite(int index) {
         int x = index % sheet.getCols();
-        int y = (index - x) / sheet.getCols();
-        return new Sprite(0, 0, size, size, sheet, x, y);
+        int y = index / sheet.getCols();
+        return new Sprite(0, 0, 0, 0, sheet, x, y);
     }
 
     public SpriteSheet getSpriteSheet() {
@@ -34,15 +22,15 @@ public class Font {
 
     public Sprite getCharSprite(char c) {
         int index = charset.indexOf(c);
+        // Logger.info(c, " - ", index);
         if(index == -1) {
-            // ?
-            throw new IndexOutOfBoundsException("Font does not support char '" + c + "'");
+        	if(c == '\u0000') {
+		        throw new IndexOutOfBoundsException("Font does not support char '" + c + "'");
+	        }else {
+		        return getCharSprite('\u0000');
+	        }
         }
-        return chars[index];
-    }
-
-    public int getSize() {
-        return size;
+        return getCharSprite(index);
     }
 
     public String getCharset() {

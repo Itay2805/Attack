@@ -31,6 +31,7 @@ import fuck.it.attack.core.FileUtils;
 import fuck.it.attack.core.Logger;
 import fuck.it.attack.core.input.EventDispatcher;
 import fuck.it.attack.googlePlayServices.SignInHelper;
+import fuck.it.attack.graphics.Color;
 import fuck.it.attack.joystick.JoystickView;
 
 public class MainActivity extends Activity {
@@ -67,6 +68,8 @@ public class MainActivity extends Activity {
 		context.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
 		FileUtils.assetManager = getAssets();
+
+		Color.loadColors();
 
 		ActivityManager am = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
 		ConfigurationInfo info = am.getDeviceConfigurationInfo();

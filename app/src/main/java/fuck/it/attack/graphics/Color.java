@@ -1,8 +1,21 @@
 package fuck.it.attack.graphics;
 
 import java.nio.ByteBuffer;
+import java.util.HashMap;
 
 public class Color {
+
+	private static final HashMap<String, Color> COLORS = new HashMap<>();
+
+	public static void loadColors() {
+		COLORS.put("red", new Color(1, 0, 0));
+		COLORS.put("green", new Color(0, 1, 0));
+		COLORS.put("blue", new Color(0, 0, 1));
+	}
+
+	public static Color getColor(String name) {
+		return COLORS.get(name);
+	}
 
 	private byte r, g, b, a;
 

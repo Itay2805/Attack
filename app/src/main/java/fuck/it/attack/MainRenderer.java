@@ -54,9 +54,9 @@ public class MainRenderer implements GLSurfaceView.Renderer {
 
 		animatedSprite = new AnimatedSprite(WIDTH / 2, HEIGHT / 2, 64.0f, 64.0f, spriteSheet2, 0,0, 16);
 
-		Font font = new Font(spriteSheet, "abcd", 64);
-		GuiLabel label = new GuiLabel("label", 0, HEIGHT / 2, "abcd", font);
-		label.setBackgroundColor(new Color(0.5f, 0.5f, 0.5f));
+		Font font = new Font(spriteSheet, "ABCEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()[]{}\"'|\\/-+=_~☺♥`<>.,;:D\u0000");
+		GuiLabel label = new GuiLabel("label", 0, HEIGHT / 2, "Normal #[red] red \n#[reset] back to normal", font, 64);
+		// label.setBackgroundColor(new Color(0.5f, 0.5f, 0.5f));
 		renderer.submit(label);
 
 		worldRenderer = new Renderer();
