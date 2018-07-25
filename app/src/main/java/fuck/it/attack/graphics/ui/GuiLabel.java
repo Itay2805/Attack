@@ -1,5 +1,6 @@
 package fuck.it.attack.graphics.ui;
 
+import fuck.it.attack.core.Logger;
 import fuck.it.attack.core.input.Event;
 import fuck.it.attack.core.text.TextFormat;
 import fuck.it.attack.core.text.Token;

@@ -2,7 +2,6 @@ package fuck.it.attack.core.text;
 
 import fuck.it.attack.core.Logger;
 import fuck.it.attack.graphics.Color;
-import fuck.it.attack.graphics.Sprite;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -157,22 +157,22 @@ public class MainRenderer implements GLSurfaceView.Renderer {
 
 	// as fast as possible I guess
 	public void render() {
-
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		long start = System.currentTimeMillis();
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		renderer.draw();
-		long end = System.currentTimeMillis();
-		avgRenderTime += end - start;
-
-		start = System.currentTimeMillis();
 		worldRenderer.begin();
 		worldRenderer.submit(animatedSprite);
 		avgTilesDrawn += worldRenderer.submit(tileMap, camera, WIDTH, HEIGHT);
 		worldRenderer.end();
 		worldRenderer.draw();
-		end = System.currentTimeMillis();
+		long end = System.currentTimeMillis();
 		avgWorldRenderTime += end - start;
+
+		start = System.currentTimeMillis();
+		renderer.draw();
+		end = System.currentTimeMillis();
+		avgRenderTime += end - start;
+
 	}
 
 	public void cleanUp() {
