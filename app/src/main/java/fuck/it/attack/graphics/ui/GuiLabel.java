@@ -1,12 +1,11 @@
 package fuck.it.attack.graphics.ui;
 
-import fuck.it.attack.core.Logger;
 import fuck.it.attack.core.input.Event;
 import fuck.it.attack.core.text.TextFormat;
 import fuck.it.attack.core.text.Token;
 import fuck.it.attack.graphics.Color;
 import fuck.it.attack.graphics.Font;
-import fuck.it.attack.graphics.Sprite;
+import fuck.it.attack.graphics.sprite.Sprite;
 
 public class GuiLabel extends GuiElement {
 

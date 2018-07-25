@@ -1,5 +1,6 @@
 package fuck.it.attack.graphics;
 
+import android.service.quicksettings.Tile;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
 
@@ -7,16 +8,18 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 
 import fuck.it.attack.core.Logger;
+import fuck.it.attack.graphics.sprite.Sprite;
 
 import static android.opengl.GLES30.*;
 
 public class Renderer {
 
-	private static final int NUM_SPRITES = 10000;
+	private static final int NUM_SPRITES = 1000;
 	private static final int VERTEX_SIZE = 3 + 2 + 1 + 1; // position, uvs, color, texId
 	private static final int VERTEX_SIZE_IN_BYTES = VERTEX_SIZE * 4;
 	private static final int INDICES_COUNT = NUM_SPRITES * 6;
@@ -145,15 +148,96 @@ public class Renderer {
 	}
 
 	public void submit(Sprite[] sprites) {
-		for(int i=0; i < sprites.length; i++){
+		for (int i = 0; i < sprites.length; i++) {
 			submit(sprites[i]);
 		}
 	}
 
 	public void submit(List<Sprite> sprites) {
-		for(int i=0; i < sprites.size(); i++){
+		for (int i = 0; i < sprites.size(); i++) {
 			submit(sprites.get(i));
 		}
+	}
+
+	private float[] textureIds;
+
+	// The camera needs to be passed here in order to ensure the culling of the tilemap.
+	public int submit(TileMap tileMap, Camera camera, int screenWidth, int screenHeight) {
+		Sprite sprites[] = tileMap.getSprites();
+		int tiles[] = tileMap.getTiles();
+
+		if(textureIds == null || textureIds.length < sprites.length) {
+			textureIds = new float[sprites.length];
+			for (int i = 0; i < sprites.length; i++) {
+				if (sprites[i].hasTexture())
+					textureIds[i] = submitTexture(sprites[i].texture);
+			}
+		}
+
+		float playerX = camera.getPosition().x;
+		float playerY = camera.getPosition().y;
+
+		int topTileX = (int)((Math.floor(playerX / TileMap.TILE_SIZE)) - 1);
+		int topTileY = (int)((Math.floor(playerY / TileMap.TILE_SIZE)) - 1);
+
+		int tilesRendered = 0;
+
+		for(int y = topTileY; y < topTileY + Math.ceil(screenHeight / TileMap.TILE_SIZE) + 2; y++) {
+			for(int x = topTileX; x < topTileX + Math.ceil(screenWidth / TileMap.TILE_SIZE) + 2; x++) {
+				// if(x < 0 || x >= tileMap.getWidth() || y < 0 || y >= tileMap.getHeight()) continue;
+				int i = x + y * tileMap.getWidth();
+				if(i < 0 || i >= tileMap.getWidth() * tileMap.getHeight()) continue;
+				int screenX = (int)(x * TileMap.TILE_SIZE - playerX);
+				int screenY = (int)(y * TileMap.TILE_SIZE - playerY);
+				if(screenX < -TileMap.TILE_SIZE || screenX >= screenWidth + TileMap.TILE_SIZE || screenY < -TileMap.TILE_SIZE || screenY >= screenHeight + TileMap.TILE_SIZE) continue;
+				if(screenX < 0) screenX = 0;
+				if(screenY < 0) screenY = 0;
+
+				int tileID = tiles[i];
+
+				tilesRendered++;
+
+				// rendering code
+				Vector2f uv1 = sprites[tileID].getUv1();
+				Vector2f uv2 = sprites[tileID].getUv2();
+
+				vboData.put(screenX);
+				vboData.put(screenY);
+				vboData.put(0);
+				vboData.put(uv1.x);
+				vboData.put(uv1.y);
+				vboData.put(sprites[tileID].getColorFloat());
+				vboData.put(textureIds[tileID]);
+
+				vboData.put(screenX + TileMap.TILE_SIZE);
+				vboData.put(screenY);
+				vboData.put(0);
+				vboData.put(uv2.x);
+				vboData.put(uv1.y);
+				vboData.put(sprites[tileID].getColorFloat());
+				vboData.put(textureIds[tileID]);
+
+				vboData.put(screenX + TileMap.TILE_SIZE);
+				vboData.put(screenY + TileMap.TILE_SIZE);
+				vboData.put(0);
+				vboData.put(uv2.x);
+				vboData.put(uv2.y);
+				vboData.put(sprites[tileID].getColorFloat());
+				vboData.put(textureIds[tileID]);
+
+				vboData.put(screenX);
+				vboData.put(screenY + TileMap.TILE_SIZE);
+				vboData.put(0);
+				vboData.put(uv1.x);
+				vboData.put(uv2.y);
+				vboData.put(sprites[tileID].getColorFloat());
+				vboData.put(textureIds[tileID]);
+
+				indicesCount += 6;
+			}
+		}
+
+		return tilesRendered;
 	}
 
 	public void end() {
@@ -167,16 +251,12 @@ public class Renderer {
 		glBindBuffer(GL_ARRAY_BUFFER, vbo);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
 
-		for(int i=0; i < textures.size(); i++) {
+		for (int i = 0; i < textures.size(); i++) {
 			glActiveTexture(GL_TEXTURE0 + i);
 			textures.get(i).bind();
 		}
 
 		glDrawElements(GL_TRIANGLES, indicesCount, GL_UNSIGNED_INT, 0);
-
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-		glBindVertexArray(0);
 	}
 
 	public void cleanUp() {
@@ -210,13 +290,6 @@ public class Renderer {
 	public void setProjectionMatrix(Matrix4f projectionMatrix) {
 		shader.start();
 		shader.setMat4("projectionMatrix", projectionMatrix);
-		shader.stop();
-	}
-
-	public void setViewMatrix(Matrix4f viewMatrix) {
-		shader.start();
-		shader.setMat4("viewMatrix", viewMatrix);
-		shader.stop();
 	}
 
 }

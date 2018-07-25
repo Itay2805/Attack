@@ -6,14 +6,13 @@ layout(location = 2) in vec4 color;
 layout(location = 3) in float texId;
 
 uniform mat4 projectionMatrix;
-uniform mat4 viewMatrix;
 
 out vec2 pass_uv;
 out vec4 pass_color;
 out float pass_texId;
 
 void main() {
-    gl_Position = projectionMatrix * viewMatrix * vec4(position, 1.0);
+    gl_Position = projectionMatrix * vec4(position, 1.0);
     pass_uv = uv;
     pass_color = color;
     pass_texId = texId;

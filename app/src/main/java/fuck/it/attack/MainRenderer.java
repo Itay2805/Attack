@@ -2,18 +2,22 @@ package fuck.it.attack;
 
 import android.opengl.GLSurfaceView;
 
+import fuck.it.attack.core.Logger;
 import org.joml.Matrix4f;
+
+import java.util.Random;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-import fuck.it.attack.graphics.AnimatedSprite;
 import fuck.it.attack.graphics.Camera;
 import fuck.it.attack.graphics.Color;
 import fuck.it.attack.graphics.Font;
 import fuck.it.attack.graphics.Renderer;
-import fuck.it.attack.graphics.Sprite;
-import fuck.it.attack.graphics.SpriteSheet;
+import fuck.it.attack.graphics.TileMap;
+import fuck.it.attack.graphics.sprite.AnimatedSprite;
+import fuck.it.attack.graphics.sprite.Sprite;
+import fuck.it.attack.graphics.sprite.SpriteSheet;
 import fuck.it.attack.graphics.ui.GuiLabel;
 import fuck.it.attack.graphics.ui.GuiRenderer;
 import fuck.it.attack.joystick.JoystickMovedListener;
@@ -21,6 +25,8 @@ import fuck.it.attack.joystick.JoystickMovedListener;
 import static android.opengl.GLES30.*;
 
 public class MainRenderer implements GLSurfaceView.Renderer {
+
+	private static final boolean DEBUG = true;
 
 	private static final int WIDTH = 1920;
 	private static final int HEIGHT = 1080;
@@ -31,6 +37,10 @@ public class MainRenderer implements GLSurfaceView.Renderer {
 	private float nsLastFrame = 0;
 	private int frames = 0;
 	private int updates = 0;
+	private int avgRenderTime = 0;
+	private int avgWorldRenderTime = 0;
+	private int avgUpdateTime = 0;
+	private int avgTilesDrawn = 0;
 
 	private GuiRenderer renderer;
 	private Renderer worldRenderer;
@@ -39,6 +49,8 @@ public class MainRenderer implements GLSurfaceView.Renderer {
 	private AnimatedSprite animatedSprite;
 	private SpriteSheet spriteSheet;
 	private SpriteSheet spriteSheet2;
+
+	private TileMap tileMap;
 
 	@Override
 	public void onSurfaceCreated(GL10 gl, EGLConfig config) {
@@ -52,7 +64,7 @@ public class MainRenderer implements GLSurfaceView.Renderer {
 		spriteSheet = new SpriteSheet("spritesheet.png");
 		spriteSheet2 = new SpriteSheet("rainbow.png");
 
-		animatedSprite = new AnimatedSprite(WIDTH / 2, HEIGHT / 2, 64.0f, 64.0f, spriteSheet2, 0,0, 16);
+		animatedSprite = new AnimatedSprite(WIDTH / 2, HEIGHT / 2, 64.0f, 64.0f, spriteSheet2, 0, 0, 16);
 
 		Font font = new Font(spriteSheet, "ABCEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()[]{}\"'|\\/-+=_~☺♥`<>.,;:D\u0000");
 		GuiLabel label = new GuiLabel("label", 0, HEIGHT / 2, "Normal #[red] red\n#[reset]back to normal", font, 64);
@@ -75,6 +87,21 @@ public class MainRenderer implements GLSurfaceView.Renderer {
 				camera.setMove(0, 0);
 			}
 		});
+
+		Sprite sprites[] = new Sprite[3];
+		sprites[0] = new Sprite(0, 0, 0, 0, new Color(0, 0.4f, 0.2f));
+		sprites[1] = new Sprite(0, 0, 0, 0, new Color(1f, 0.4f, 0.8f));
+		sprites[2] = new Sprite(0, 0, 0, 0, new Color(0.4f, 0.2f, 0.9f));
+		tileMap = new TileMap(sprites, 64, 64);
+
+		int tileIds[] = new int[64 * 64];
+		Random random = new Random();
+
+		for(int i=0; i < 64 * 64; i++) {
+			tileIds[i] = random.nextInt(3);
+		}
+
+		tileMap.setTileIds(tileIds);
 	}
 
 	@Override
@@ -87,7 +114,7 @@ public class MainRenderer implements GLSurfaceView.Renderer {
 	public void onDrawFrame(GL10 gl) {
 		long now = System.nanoTime();
 		delta += (now - lastTime) / ns;
-		nsLastFrame = (float)(now - lastTime) / 1000000000.0f;
+		nsLastFrame = (float) (now - lastTime) / 1000000000.0f;
 		lastTime = now;
 
 		while (delta >= 1) {
@@ -99,9 +126,16 @@ public class MainRenderer implements GLSurfaceView.Renderer {
 		frames++;
 
 		if (System.currentTimeMillis() - timer > 1000) {
+			avgRenderTime /= frames;
+			avgWorldRenderTime /= frames;
+			avgUpdateTime /= updates;
+			avgTilesDrawn /= frames;
 			tick();
 			timer += 1000;
-			//Logger.debug("[FPS] fps: " + frames + ", ups: " + updates);
+			avgTilesDrawn = 0;
+			avgRenderTime = 0;
+			avgUpdateTime = 0;
+			avgWorldRenderTime = 0;
 			frames = 0;
 			updates = 0;
 		}
@@ -110,24 +144,35 @@ public class MainRenderer implements GLSurfaceView.Renderer {
 	// once a second
 	public void tick() {
 		animatedSprite.nextAnimation();
-
+		Logger.debug("[FPS] fps: ", frames, "(gui: ", avgRenderTime, "mil, world: ", avgTilesDrawn, "/", avgWorldRenderTime, "mil), ups: ", updates, " (", avgUpdateTime , "mil)");
 	}
 
 	// 60 times a second
 	public void update(double delta) {
-		camera.update((float)delta);
+		long start = System.currentTimeMillis();
+		camera.update((float) delta);
+		long end = System.currentTimeMillis();
+		avgUpdateTime += end - start;
 	}
 
 	// as fast as possible I guess
 	public void render() {
+
+
+		long start = System.currentTimeMillis();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		renderer.draw();
+		long end = System.currentTimeMillis();
+		avgRenderTime += end - start;
 
-		worldRenderer.setViewMatrix(camera.getViewMatrix());
+		start = System.currentTimeMillis();
 		worldRenderer.begin();
 		worldRenderer.submit(animatedSprite);
+		avgTilesDrawn += worldRenderer.submit(tileMap, camera, WIDTH, HEIGHT);
 		worldRenderer.end();
 		worldRenderer.draw();
+		end = System.currentTimeMillis();
+		avgWorldRenderTime += end - start;
 	}
 
 	public void cleanUp() {
