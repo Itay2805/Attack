@@ -144,16 +144,6 @@ public class Renderer {
 		indicesCount += 6;
 	}
 
-	public void submitText(String text, int x, int y, Font font) {
-		for(char c : text.toCharArray()) {
-			Sprite sprite = font.getCharSprite(c);
-			sprite.x = x;
-			sprite.y = y;
-			submit(sprite);
-			x += font.getSize() + 1;
-		}
-	}
-
 	public void submit(Sprite[] sprites) {
 		for(int i=0; i < sprites.length; i++){
 			submit(sprites[i]);

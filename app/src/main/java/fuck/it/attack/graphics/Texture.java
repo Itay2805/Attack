@@ -60,7 +60,6 @@ public class Texture {
 			texture = new Texture(bitmap);
 			texture.width = bitmap.getWidth();
 			texture.height = bitmap.getHeight();
-
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
