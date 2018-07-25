@@ -28,8 +28,8 @@ public class Camera {
 
 	public Matrix4f getViewMatrix() {
 		viewMatrix.identity();
-		//viewMatrix.rotate((float) Math.toRadians(rotationZ), new Vector3f(0.0f, 0.0f, 1.0f), viewMatrix);
-		viewMatrix.translate(position.x, position.y, 0.0f);
+		//viewMatrix.translate(position.x, position.y, 0.0f);
+		viewMatrix.translate(0, 0, 0.0f);
 		return viewMatrix;
 	}
 

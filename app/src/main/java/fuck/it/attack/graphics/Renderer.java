@@ -1,5 +1,6 @@
 package fuck.it.attack.graphics;
 
+import android.service.quicksettings.Tile;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
 
@@ -7,6 +8,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,7 +19,7 @@ import static android.opengl.GLES30.*;
 
 public class Renderer {
 
-	private static final int NUM_SPRITES = 10000;
+	private static final int NUM_SPRITES = 1000;
 	private static final int VERTEX_SIZE = 3 + 2 + 1 + 1; // position, uvs, color, texId
 	private static final int VERTEX_SIZE_IN_BYTES = VERTEX_SIZE * 4;
 	private static final int INDICES_COUNT = NUM_SPRITES * 6;
@@ -167,81 +169,85 @@ public class Renderer {
 		}
 	}
 
+	private float[] textureIds;
+
 	// The camera needs to be passed here in order to ensure the culling of the tilemap.
-	public void submit(TileMap tileMap, Camera camera, int screenWidth, int screenHeight) {
+	public int submit(TileMap tileMap, Camera camera, int screenWidth, int screenHeight) {
 		Sprite sprites[] = tileMap.getSprites();
 		int tiles[] = tileMap.getTiles();
 
-		float textureId[] = new float[sprites.length];
-
-		for (int i = 0; i < sprites.length; i++) {
-			if (sprites[i].hasTexture())
-				textureId[i] = submitTexture(sprites[i].texture);
+		if(textureIds == null || textureIds.length < sprites.length) {
+			textureIds = new float[sprites.length];
+			for (int i = 0; i < sprites.length; i++) {
+				if (sprites[i].hasTexture())
+					textureIds[i] = submitTexture(sprites[i].texture);
+			}
 		}
 
-		Vector2f position = camera.getPosition();
+		float playerX = camera.getPosition().x;
+		float playerY = camera.getPosition().y;
 
-		int scrollX = (int) position.x + (int) (tileMap.getPlayerX() * TileMap.TILE_SIZE);
-		int scrollY = (int) position.y + (int) (tileMap.getPlayerY() * TileMap.TILE_SIZE);
+		int topTileX = (int)((Math.floor(playerX / TileMap.TILE_SIZE)) - 1);
+		int topTileY = (int)((Math.floor(playerY / TileMap.TILE_SIZE)) - 1);
 
-		int tileScrollX = (int)position.x % (int)TileMap.TILE_SIZE;
-		int tileScrollY = (int)position.y % (int)TileMap.TILE_SIZE;
+		int tilesRendered = 0;
 
-		Logger.debug("TileScrollX: " + tileScrollX + " TileScrollY: " + tileScrollY);
+		for(int y = topTileY; y < topTileY + Math.ceil(screenHeight / TileMap.TILE_SIZE) + 2; y++) {
+			for(int x = topTileX; x < topTileX + Math.ceil(screenWidth / TileMap.TILE_SIZE) + 2; x++) {
+				// if(x < 0 || x >= tileMap.getWidth() || y < 0 || y >= tileMap.getHeight()) continue;
+				int i = x + y * tileMap.getWidth();
+				if(i < 0 || i >= tileMap.getWidth() * tileMap.getHeight()) continue;
+				int screenX = (int)(x * TileMap.TILE_SIZE - playerX);
+				int screenY = (int)(y * TileMap.TILE_SIZE - playerY);
+				if(screenX < -TileMap.TILE_SIZE || screenX >= screenWidth + TileMap.TILE_SIZE || screenY < -TileMap.TILE_SIZE || screenY >= screenHeight + TileMap.TILE_SIZE) continue;
+				if(screenX < 0) screenX = 0;
+				if(screenY < 0) screenY = 0;
 
-		int maxCountX = (int) (screenWidth / TileMap.TILE_SIZE + 2);
-		int maxCountY = (int) (screenHeight / TileMap.TILE_SIZE + 2);
+				int tileID = tiles[i];
 
-		int middleTileX = Math.max(Math.min((int) (scrollX / TileMap.TILE_SIZE), tileMap.getWidth() - maxCountX / 2 - 1), maxCountX / 2 + 1);
-		int middleTileY = Math.max(Math.min((int) (scrollY / TileMap.TILE_SIZE), tileMap.getHeight() - maxCountY / 2 - 1), maxCountY / 2 + 1);
+				tilesRendered++;
 
-		for (int y = -maxCountY / 2 - 1; y <= maxCountY / 2 + 1; y++) {
-			for (int x = -maxCountX / 2 - 1; x <= maxCountX / 2 + 1; x++) {
-				final int currentTileId = tiles[x + middleTileX + (y + middleTileY) * tileMap.getWidth()];
-				Vector2f uv1 = sprites[currentTileId].getUv1();
-				Vector2f uv2 = sprites[currentTileId].getUv2();
+				// rendering code
+				Vector2f uv1 = sprites[tileID].getUv1();
+				Vector2f uv2 = sprites[tileID].getUv2();
 
-				float tileX = -position.x + ((float) maxCountX / 2.0f + (float) x) * TileMap.TILE_SIZE - tileScrollX;
-				float tileY = -position.y + ((float) maxCountY / 2.0f + (float) y) * TileMap.TILE_SIZE - tileScrollY;
-
-				//Logger.debug("TileX: " + tileX + " TileY: " + tileY);
-
-				vboData.put(tileX);
-				vboData.put(tileY);
+				vboData.put(screenX);
+				vboData.put(screenY);
 				vboData.put(0);
 				vboData.put(uv1.x);
 				vboData.put(uv1.y);
-				vboData.put(sprites[currentTileId].getColorFloat());
-				vboData.put(textureId[currentTileId]);
+				vboData.put(sprites[tileID].getColorFloat());
+				vboData.put(textureIds[tileID]);
 
-				vboData.put(tileX + TileMap.TILE_SIZE);
-				vboData.put(tileY);
+				vboData.put(screenX + TileMap.TILE_SIZE);
+				vboData.put(screenY);
 				vboData.put(0);
 				vboData.put(uv2.x);
 				vboData.put(uv1.y);
-				vboData.put(sprites[currentTileId].getColorFloat());
-				vboData.put(textureId[currentTileId]);
+				vboData.put(sprites[tileID].getColorFloat());
+				vboData.put(textureIds[tileID]);
 
-				vboData.put(tileX + TileMap.TILE_SIZE);
-				vboData.put(tileY + TileMap.TILE_SIZE);
+				vboData.put(screenX + TileMap.TILE_SIZE);
+				vboData.put(screenY + TileMap.TILE_SIZE);
 				vboData.put(0);
 				vboData.put(uv2.x);
 				vboData.put(uv2.y);
-				vboData.put(sprites[currentTileId].getColorFloat());
-				vboData.put(textureId[currentTileId]);
+				vboData.put(sprites[tileID].getColorFloat());
+				vboData.put(textureIds[tileID]);
 
-				vboData.put(tileX);
-				vboData.put(tileY + TileMap.TILE_SIZE);
+				vboData.put(screenX);
+				vboData.put(screenY + TileMap.TILE_SIZE);
 				vboData.put(0);
 				vboData.put(uv1.x);
 				vboData.put(uv2.y);
-				vboData.put(sprites[currentTileId].getColorFloat());
-				vboData.put(textureId[currentTileId]);
+				vboData.put(sprites[tileID].getColorFloat());
+				vboData.put(textureIds[tileID]);
 
 				indicesCount += 6;
 			}
 		}
 
+		return tilesRendered;
 	}
 
 	public void end() {
@@ -294,11 +300,6 @@ public class Renderer {
 	public void setProjectionMatrix(Matrix4f projectionMatrix) {
 		shader.start();
 		shader.setMat4("projectionMatrix", projectionMatrix);
-	}
-
-	public void setViewMatrix(Matrix4f viewMatrix) {
-		shader.start();
-		shader.setMat4("viewMatrix", viewMatrix);
 	}
 
 }

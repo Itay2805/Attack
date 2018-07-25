@@ -4,7 +4,7 @@ import fuck.it.attack.graphics.sprite.Sprite;
 
 public class TileMap {
 
-	public static final float TILE_SIZE = 64;
+	public static final float TILE_SIZE = 128;
 
 	private int tileIds[];
 	private int width, height;
