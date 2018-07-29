@@ -2,7 +2,6 @@ package fuck.it.attack;
 
 import android.opengl.GLSurfaceView;
 
-import fuck.it.attack.core.Logger;
 import org.joml.Matrix4f;
 
 import java.util.Random;
@@ -10,17 +9,19 @@ import java.util.Random;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
+import fuck.it.attack.core.Logger;
 import fuck.it.attack.graphics.Camera;
 import fuck.it.attack.graphics.Color;
 import fuck.it.attack.graphics.Font;
 import fuck.it.attack.graphics.Renderer;
+import fuck.it.attack.graphics.Texture;
 import fuck.it.attack.graphics.TileMap;
 import fuck.it.attack.graphics.sprite.AnimatedSprite;
 import fuck.it.attack.graphics.sprite.Sprite;
 import fuck.it.attack.graphics.sprite.SpriteSheet;
+import fuck.it.attack.graphics.ui.GuiJoystick;
 import fuck.it.attack.graphics.ui.GuiLabel;
 import fuck.it.attack.graphics.ui.GuiRenderer;
-import fuck.it.attack.joystick.JoystickMovedListener;
 
 import static android.opengl.GLES30.*;
 
@@ -50,6 +51,10 @@ public class MainRenderer implements GLSurfaceView.Renderer {
 	private SpriteSheet spriteSheet;
 	private SpriteSheet spriteSheet2;
 
+	private GuiJoystick joystick;
+
+	private Texture textures[];
+
 	private TileMap tileMap;
 
 	@Override
@@ -69,24 +74,37 @@ public class MainRenderer implements GLSurfaceView.Renderer {
 		Font font = new Font(spriteSheet, "ABCEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()[]{}\"'|\\/-+=_~☺♥`<>.,;:D\u0000");
 		GuiLabel label = new GuiLabel("label", 0, HEIGHT / 2, "Normal #[red] red\n#[reset]back to normal", font, 64);
 		// label.setBackgroundColor(new Color(0.5f, 0.5f, 0.5f));
+
+		joystick = new GuiJoystick("joystick", 0, 0, 600, 600);
+
+		textures = new Texture[2];
+		textures[0] = Texture.createTexture("joystickinner.png");
+		textures[1] = Texture.createTexture("joystickouter.png");
+		joystick.setInnerTexture(textures[0]);
+		//joystick.setOuterTexture(textures[1]);
+
+		//joystick.setBackgroundColor(new Color(0, 0, 0, 0));
+
 		renderer.submit(label);
+		renderer.submit(joystick);
+
 
 		worldRenderer = new Renderer();
 		worldRenderer.setProjectionMatrix(new Matrix4f().ortho(0, WIDTH, 0, HEIGHT, 1.0f, -1.0f));
 		camera = new Camera();
 		camera.setMoveFactor(64.0f * 5.0f, 64.0f * 5.0f); // 5 sprites per second, a sprite is 64 units
 
-		MainActivity.getRightJoystick().setOnJostickMovedListener(new JoystickMovedListener() {
-			@Override
-			public void onMoved(float pan, float tilt) {
-				camera.setMove(pan, tilt);
-			}
-
-			@Override
-			public void onReleased() {
-				camera.setMove(0, 0);
-			}
-		});
+		//MainActivity.getRightJoystick().setOnJostickMovedListener(new JoystickMovedListener() {
+		//	@Override
+		//	public void onMoved(float pan, float tilt) {
+		//		camera.setMove(pan, tilt);
+		//	}
+		//
+		//	@Override
+		//	public void onReleased() {
+		//		camera.setMove(0, 0);
+		//	}
+		//});
 
 		Sprite sprites[] = new Sprite[3];
 		sprites[0] = new Sprite(0, 0, 0, 0, new Color(0, 0.4f, 0.2f));
@@ -97,7 +115,7 @@ public class MainRenderer implements GLSurfaceView.Renderer {
 		int tileIds[] = new int[64 * 64];
 		Random random = new Random();
 
-		for(int i=0; i < 64 * 64; i++) {
+		for (int i = 0; i < 64 * 64; i++) {
 			tileIds[i] = random.nextInt(3);
 		}
 
@@ -144,7 +162,7 @@ public class MainRenderer implements GLSurfaceView.Renderer {
 	// once a second
 	public void tick() {
 		animatedSprite.nextAnimation();
-		Logger.debug("[FPS] fps: ", frames, "(gui: ", avgRenderTime, "mil, world: ", avgTilesDrawn, "/", avgWorldRenderTime, "mil), ups: ", updates, " (", avgUpdateTime , "mil)");
+		Logger.debug("[FPS] fps: ", frames, "(gui: ", avgRenderTime, "mil, world: ", avgTilesDrawn, "/", avgWorldRenderTime, "mil), ups: ", updates, " (", avgUpdateTime, "mil)");
 	}
 
 	// 60 times a second
@@ -164,7 +182,7 @@ public class MainRenderer implements GLSurfaceView.Renderer {
 		worldRenderer.submit(animatedSprite);
 		avgTilesDrawn += worldRenderer.submit(tileMap, camera, WIDTH, HEIGHT);
 		worldRenderer.end();
-		worldRenderer.draw();
+		//worldRenderer.draw();
 		long end = System.currentTimeMillis();
 		avgWorldRenderTime += end - start;
 
@@ -180,5 +198,7 @@ public class MainRenderer implements GLSurfaceView.Renderer {
 		worldRenderer.cleanUp();
 		spriteSheet.cleanUp();
 		spriteSheet2.cleanUp();
+		textures[0].cleanUp();
+		textures[1].cleanUp();
 	}
 }

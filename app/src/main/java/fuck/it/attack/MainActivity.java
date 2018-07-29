@@ -101,7 +101,7 @@ public class MainActivity extends Activity {
 			FrameLayout layout = new FrameLayout(context);
 			layout.addView(mainSurfaceView);
 			//layout.addView(leftJoystick);
-			layout.addView(rightJoystick);
+			//layout.addView(rightJoystick);
 
 			context.setContentView(layout);
 
