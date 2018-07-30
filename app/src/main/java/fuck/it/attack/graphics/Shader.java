@@ -110,6 +110,10 @@ public class Shader {
 		glUniform4f(uniforms.get(name), vector.x, vector.y, vector.z, vector.w);
 	}
 
+	public void setInts(String name, int[] v) {
+		glUniform1iv(uniforms.get(name), v.length, v, 0);
+	}
+
 	private static final float[] MATRIX_FLOAT_BUFFER = new float[16];
 
 	public void setMat4(String name, Matrix4f matrix) {
