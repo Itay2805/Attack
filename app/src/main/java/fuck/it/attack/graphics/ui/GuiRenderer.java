@@ -140,6 +140,13 @@ public class GuiRenderer extends EventListener {
 		return super.onContextClick(e);
 	}
 
+	@Override
+	public void onUp(Event e) {
+		Event newE1 = convertToGuiSpace(e);
+		for (int i = 0; i < elements.size(); i++)
+			elements.get(i).onUp(newE1);
+	}
+
 	public void setSurfaceSize(float width, float height) {
 		eventXRatio = this.width / width;
 		eventYRatio = this.height / height;
