@@ -75,13 +75,13 @@ public class MainRenderer implements GLSurfaceView.Renderer {
 		GuiLabel label = new GuiLabel("label", 0, HEIGHT / 2, "Normal #[red] red\n#[reset]back to normal", font, 64);
 		// label.setBackgroundColor(new Color(0.5f, 0.5f, 0.5f));
 
-		joystick = new GuiJoystick("joystick", 0, 0, 600, 600);
+		joystick = new GuiJoystick("joystick", WIDTH - 400, 10, 190, 100);
 
 		textures = new Texture[2];
 		textures[0] = Texture.createTexture("joystickinner.png");
 		textures[1] = Texture.createTexture("joystickouter.png");
 		joystick.setInnerTexture(textures[0]);
-		//joystick.setOuterTexture(textures[1]);
+		joystick.setOuterTexture(textures[1]);
 
 		//joystick.setBackgroundColor(new Color(0, 0, 0, 0));
 
