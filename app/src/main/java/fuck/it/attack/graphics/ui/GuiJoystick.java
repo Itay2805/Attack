@@ -5,7 +5,6 @@ import org.joml.Vector2f;
 import fuck.it.attack.core.input.Event;
 import fuck.it.attack.graphics.Texture;
 import fuck.it.attack.graphics.sprite.Sprite;
-import fuck.it.attack.graphics.sprite.SpriteSheet;
 
 public class GuiJoystick extends GuiElement {
 
@@ -21,8 +20,8 @@ public class GuiJoystick extends GuiElement {
 		this.outerRadius = outerRadius;
 
 		innerCirclePosition = new Vector2f();
-		innerCirclePosition.x = (outerRadius - innerRadius) / 2.0f;
-		innerCirclePosition.y = (outerRadius - innerRadius) / 2.0f;
+		innerCirclePosition.x = x + (outerRadius - innerRadius) /* 2.0f*/;
+		innerCirclePosition.y = y + (outerRadius - innerRadius) /* 2.0f*/;
 		spriteList.add(new Sprite(innerCirclePosition.x, innerCirclePosition.y, innerRadius * 2, innerRadius * 2));
 	}
 
@@ -36,9 +35,20 @@ public class GuiJoystick extends GuiElement {
 	}
 
 	@Override
+	public boolean onDown(Event e) {
+		return super.onDown(e);
+	}
+
+	@Override
 	public boolean contains(Event pos) {
-		return (pos.x - this.innerCirclePosition.x + innerRadius) * (pos.x - this.innerCirclePosition.x + innerRadius)
-				+ (pos.y -  this.innerCirclePosition.y + innerRadius) * (pos.y -  this.innerCirclePosition.y + innerRadius)
-				< (innerRadius * innerRadius);
+		return  // the mouse position is in the inner circle, which can move
+				((pos.x - this.innerCirclePosition.x + innerRadius) * (pos.x - this.innerCirclePosition.x + innerRadius)
+				+ (pos.y - this.innerCirclePosition.y + innerRadius) * (pos.y - this.innerCirclePosition.y + innerRadius)
+				< (innerRadius * innerRadius))
+				||
+				// the mouse position is in the outer circle
+				((pos.x - this.position.x + outerRadius) * (pos.x - this.position.x + outerRadius)
+				+ (pos.y - this.position.y + outerRadius) * (pos.y - this.position.y + outerRadius)
+				< (outerRadius * outerRadius));
 	}
 }
