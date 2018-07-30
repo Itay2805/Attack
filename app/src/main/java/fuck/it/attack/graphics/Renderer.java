@@ -1,6 +1,5 @@
 package fuck.it.attack.graphics;
 
-import android.service.quicksettings.Tile;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
 
@@ -8,11 +7,9 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
-import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 
-import fuck.it.attack.core.Logger;
 import fuck.it.attack.graphics.sprite.Sprite;
 
 import static android.opengl.GLES30.*;
@@ -37,6 +34,7 @@ public class Renderer {
 	private Shader shader;
 
 	private List<Texture> textures = new ArrayList<>();
+	private float[] textureIds;
 
 	public Renderer() {
 		final int[] buffers = new int[3];
@@ -91,6 +89,12 @@ public class Renderer {
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, iboData.capacity() * 4, iboData, GL_STATIC_DRAW);
 
 		shader = new Shader("batchrenderer.vert", "batchrenderer.frag");
+		shader.start();
+
+		int[] textureIds = {
+				0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
+		};
+		shader.setInts("textures[0]", textureIds);
 	}
 
 	public void begin() {
@@ -159,14 +163,12 @@ public class Renderer {
 		}
 	}
 
-	private float[] textureIds;
-
 	// The camera needs to be passed here in order to ensure the culling of the tilemap.
 	public int submit(TileMap tileMap, Camera camera, int screenWidth, int screenHeight) {
 		Sprite sprites[] = tileMap.getSprites();
 		int tiles[] = tileMap.getTiles();
 
-		if(textureIds == null || textureIds.length < sprites.length) {
+		if (textureIds == null || textureIds.length < sprites.length) {
 			textureIds = new float[sprites.length];
 			for (int i = 0; i < sprites.length; i++) {
 				if (sprites[i].hasTexture())
@@ -177,21 +179,22 @@ public class Renderer {
 		float playerX = camera.getPosition().x;
 		float playerY = camera.getPosition().y;
 
-		int topTileX = (int)((Math.floor(playerX / TileMap.TILE_SIZE)) - 1);
-		int topTileY = (int)((Math.floor(playerY / TileMap.TILE_SIZE)) - 1);
+		int topTileX = (int) ((Math.floor(playerX / TileMap.TILE_SIZE)) - 1);
+		int topTileY = (int) ((Math.floor(playerY / TileMap.TILE_SIZE)) - 1);
 
 		int tilesRendered = 0;
 
-		for(int y = topTileY; y < topTileY + Math.ceil(screenHeight / TileMap.TILE_SIZE) + 2; y++) {
-			for(int x = topTileX; x < topTileX + Math.ceil(screenWidth / TileMap.TILE_SIZE) + 2; x++) {
+		for (int y = topTileY; y < topTileY + Math.ceil(screenHeight / TileMap.TILE_SIZE) + 2; y++) {
+			for (int x = topTileX; x < topTileX + Math.ceil(screenWidth / TileMap.TILE_SIZE) + 2; x++) {
 				// if(x < 0 || x >= tileMap.getWidth() || y < 0 || y >= tileMap.getHeight()) continue;
 				int i = x + y * tileMap.getWidth();
-				if(i < 0 || i >= tileMap.getWidth() * tileMap.getHeight()) continue;
-				int screenX = (int)(x * TileMap.TILE_SIZE - playerX);
-				int screenY = (int)(y * TileMap.TILE_SIZE - playerY);
-				if(screenX < -TileMap.TILE_SIZE || screenX >= screenWidth + TileMap.TILE_SIZE || screenY < -TileMap.TILE_SIZE || screenY >= screenHeight + TileMap.TILE_SIZE) continue;
-				if(screenX < 0) screenX = 0;
-				if(screenY < 0) screenY = 0;
+				if (i < 0 || i >= tileMap.getWidth() * tileMap.getHeight()) continue;
+				int screenX = (int) (x * TileMap.TILE_SIZE - playerX);
+				int screenY = (int) (y * TileMap.TILE_SIZE - playerY);
+				if (screenX < -TileMap.TILE_SIZE || screenX >= screenWidth + TileMap.TILE_SIZE || screenY < -TileMap.TILE_SIZE || screenY >= screenHeight + TileMap.TILE_SIZE)
+					continue;
+				if (screenX < 0) screenX = 0;
+				if (screenY < 0) screenY = 0;
 
 				int tileID = tiles[i];
 
