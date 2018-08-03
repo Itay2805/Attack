@@ -19,8 +19,14 @@ public class EventDispatcher extends GestureDetector.SimpleOnGestureListener {
 		view.setOnTouchListener(new View.OnTouchListener() {
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
-				v.performClick();
-				return detector.onTouchEvent(event);
+				if(event.getAction() != MotionEvent.ACTION_UP){
+					v.performClick();
+					if(event.getAction() == MotionEvent.ACTION_MOVE)
+						instance.onDown(event);
+					return detector.onTouchEvent(event);
+				}
+				instance.onUp(event);
+				return true;
 			}
 		});
 
@@ -140,5 +146,12 @@ public class EventDispatcher extends GestureDetector.SimpleOnGestureListener {
 			if (listeners.get(i).onContextClick(EventDispatcher.e1))
 				return true;
 		return super.onContextClick(e);
+	}
+
+	public void onUp(MotionEvent e) {
+		EventDispatcher.e1.set(e);
+		for (int i = 0; i < listeners.size(); i++) {
+			listeners.get(i).onUp(e1);
+		}
 	}
 }

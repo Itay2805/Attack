@@ -48,6 +48,8 @@ public class EventListener {
 		return false;
 	}
 
+	public void onUp(Event e) {}
+
 	public String getName() {
 		return name;
 	}
