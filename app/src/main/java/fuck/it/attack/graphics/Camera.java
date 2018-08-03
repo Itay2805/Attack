@@ -36,8 +36,6 @@ public class Camera {
 	public void setMove(float moveX, float moveY) {
 		move.x = moveX;
 		move.y = moveY;
-		if(move.length() != 0)
-			move.normalize();
 	}
 
 	public void setMoveFactor(float moveFactorX, float moveFactorY) {

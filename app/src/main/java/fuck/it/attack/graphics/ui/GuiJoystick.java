@@ -15,6 +15,8 @@ public class GuiJoystick extends GuiElement {
 
 	Vector2f innerMove;
 
+	Vector2f move;
+
 	GuiJoystickMovedListener listener;
 
 	float innerRadius;
@@ -28,8 +30,10 @@ public class GuiJoystick extends GuiElement {
 		this.innerRadius = innerRadius;
 		this.outerRadius = outerRadius;
 
+		move = new Vector2f();
 		innerMove = new Vector2f();
 		innerCirclePosition = new Vector2f();
+
 		innerCirclePosition.x = x + (outerRadius - innerRadius) /* 2.0f*/;
 		innerCirclePosition.y = y + (outerRadius - innerRadius) /* 2.0f*/;
 		spriteList.add(new Sprite(innerCirclePosition.x, innerCirclePosition.y, innerRadius * 2, innerRadius * 2));
@@ -58,7 +62,11 @@ public class GuiJoystick extends GuiElement {
 		}
 
 		if (listener != null) {
-			listener.onMoved(innerMove.x / outerRadius, -innerMove.y / outerRadius);
+			move.x = innerMove.x / outerRadius;
+			move.y = -innerMove.y / outerRadius;
+			if(move.length() > 1)
+				move.normalize();
+			listener.onMoved(move.x, move.y);
 		}
 
 		updateInnerCircle();
