@@ -19,8 +19,10 @@ public class EventDispatcher extends GestureDetector.SimpleOnGestureListener {
 		view.setOnTouchListener(new View.OnTouchListener() {
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
-				if(event.getAction() != 1){
+				if(event.getAction() != MotionEvent.ACTION_UP){
 					v.performClick();
+					if(event.getAction() == MotionEvent.ACTION_MOVE)
+						instance.onDown(event);
 					return detector.onTouchEvent(event);
 				}
 				instance.onUp(event);
