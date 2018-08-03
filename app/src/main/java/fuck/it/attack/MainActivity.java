@@ -8,47 +8,23 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ConfigurationInfo;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.util.DisplayMetrics;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 
 import com.google.android.gms.auth.api.Auth;
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.auth.api.signin.GoogleSignInResult;
-import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.games.Games;
-import com.google.android.gms.games.GamesClient;
-import com.google.android.gms.signin.SignIn;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 
 import fuck.it.attack.core.FileUtils;
-import fuck.it.attack.core.Logger;
 import fuck.it.attack.core.input.EventDispatcher;
 import fuck.it.attack.googlePlayServices.SignInHelper;
 import fuck.it.attack.graphics.Color;
-import fuck.it.attack.joystick.JoystickView;
 
 public class MainActivity extends Activity {
 
 	private static MainActivity context;
-	private static JoystickView rightJoystick;
-	//private static JoystickView leftJoystick;
 	private static MainRenderer mainRenderer;
 	private static MainSurfaceView mainSurfaceView;
-
-	/*public static JoystickView getLeftJoystick() {
-		return leftJoystick;
-	}*/
-
-	public static JoystickView getRightJoystick() {
-		return rightJoystick;
-	}
 
 	public static MainActivity getContext() {
 		return context;
@@ -80,28 +56,14 @@ public class MainActivity extends Activity {
 			mainSurfaceView.setEGLContextClientVersion(3);
 			mainSurfaceView.setRenderer(mainRenderer);
 
-			//leftJoystick = new JoystickView(context);
-			rightJoystick = new JoystickView(context);
 
 			DisplayMetrics display = new DisplayMetrics();
 			((Activity) MainActivity.getContext()).getWindowManager()
 					.getDefaultDisplay()
 					.getMetrics(display);
 
-			int size = display.widthPixels / 5;
-
-			//FrameLayout.LayoutParams leftLayoutParams = new FrameLayout.LayoutParams(size, size);
-			//leftLayoutParams.setMargins(20, display.heightPixels - size - 20, 0, 0);
-			//leftJoystick.setLayoutParams(leftLayoutParams);
-
-			FrameLayout.LayoutParams rightLayoutParams = new FrameLayout.LayoutParams(size, size);
-			rightLayoutParams.setMargins(display.widthPixels - size - 20, display.heightPixels - size - 20, 0, 0);
-			rightJoystick.setLayoutParams(rightLayoutParams);
-
 			FrameLayout layout = new FrameLayout(context);
 			layout.addView(mainSurfaceView);
-			//layout.addView(leftJoystick);
-			//layout.addView(rightJoystick);
 
 			context.setContentView(layout);
 
