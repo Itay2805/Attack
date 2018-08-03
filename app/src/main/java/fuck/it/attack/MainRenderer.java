@@ -20,6 +20,7 @@ import fuck.it.attack.graphics.sprite.AnimatedSprite;
 import fuck.it.attack.graphics.sprite.Sprite;
 import fuck.it.attack.graphics.sprite.SpriteSheet;
 import fuck.it.attack.graphics.ui.GuiJoystick;
+import fuck.it.attack.graphics.ui.GuiJoystickMovedListener;
 import fuck.it.attack.graphics.ui.GuiLabel;
 import fuck.it.attack.graphics.ui.GuiRenderer;
 
@@ -94,17 +95,17 @@ public class MainRenderer implements GLSurfaceView.Renderer {
 		camera = new Camera();
 		camera.setMoveFactor(64.0f * 5.0f, 64.0f * 5.0f); // 5 sprites per second, a sprite is 64 units
 
-		//MainActivity.getRightJoystick().setOnJostickMovedListener(new JoystickMovedListener() {
-		//	@Override
-		//	public void onMoved(float pan, float tilt) {
-		//		camera.setMove(pan, tilt);
-		//	}
-		//
-		//	@Override
-		//	public void onReleased() {
-		//		camera.setMove(0, 0);
-		//	}
-		//});
+		joystick.setOnJostickMovedListener(new GuiJoystickMovedListener() {
+			@Override
+			public void onMoved(float pan, float tilt) {
+				camera.setMove(pan, tilt);
+			}
+
+			@Override
+			public void onReleased() {
+				camera.setMove(0, 0);
+			}
+		});
 
 		Sprite sprites[] = new Sprite[3];
 		sprites[0] = new Sprite(0, 0, 0, 0, new Color(0, 0.4f, 0.2f));
@@ -179,10 +180,10 @@ public class MainRenderer implements GLSurfaceView.Renderer {
 
 		long start = System.currentTimeMillis();
 		worldRenderer.begin();
-		worldRenderer.submit(animatedSprite);
 		avgTilesDrawn += worldRenderer.submit(tileMap, camera, WIDTH, HEIGHT);
+		worldRenderer.submit(animatedSprite);
 		worldRenderer.end();
-		//worldRenderer.draw();
+		worldRenderer.draw();
 		long end = System.currentTimeMillis();
 		avgWorldRenderTime += end - start;
 

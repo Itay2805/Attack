@@ -1,7 +1,10 @@
 package fuck.it.attack.graphics.ui;
 
+import android.os.Handler;
+
 import org.joml.Vector2f;
 
+import fuck.it.attack.core.Logger;
 import fuck.it.attack.core.input.Event;
 import fuck.it.attack.graphics.Texture;
 import fuck.it.attack.graphics.sprite.Sprite;
@@ -10,8 +13,14 @@ public class GuiJoystick extends GuiElement {
 
 	Vector2f innerCirclePosition;
 
+	Vector2f innerMove;
+
+	GuiJoystickMovedListener listener;
+
 	float innerRadius;
 	float outerRadius;
+
+	boolean currentlyClicked = false;
 
 	public GuiJoystick(String name, float x, float y, float outerRadius, float innerRadius) {
 		super(name, x, y, outerRadius * 2, outerRadius * 2);
@@ -19,6 +28,7 @@ public class GuiJoystick extends GuiElement {
 		this.innerRadius = innerRadius;
 		this.outerRadius = outerRadius;
 
+		innerMove = new Vector2f();
 		innerCirclePosition = new Vector2f();
 		innerCirclePosition.x = x + (outerRadius - innerRadius) /* 2.0f*/;
 		innerCirclePosition.y = y + (outerRadius - innerRadius) /* 2.0f*/;
@@ -36,19 +46,80 @@ public class GuiJoystick extends GuiElement {
 
 	@Override
 	public boolean onDown(Event e) {
-		return super.onDown(e);
+		Logger.debug("Clicked!");
+		innerMove.x = e.x - innerCirclePosition.x - innerRadius;
+		innerMove.y = e.y - innerCirclePosition.y - innerRadius;
+
+		//clamp innerMove
+
+		if (innerMove.x <= -outerRadius || innerMove.x >= outerRadius || innerMove.y <= -outerRadius || innerMove.y >= outerRadius) {
+			innerMove.normalize();
+			innerMove.mul(outerRadius);
+		}
+
+		if (listener != null) {
+			listener.onMoved(innerMove.x / outerRadius, -innerMove.y / outerRadius);
+		}
+
+		updateInnerCircle();
+
+		currentlyClicked = true;
+		return true;
+	}
+
+	@Override
+	public void onUp(Event e) {
+		Logger.debug("Un-Clicked!");
+		returnHandleToCenter();
+		currentlyClicked = false;
+		if (listener != null) {
+			listener.onReleased();
+		}
 	}
 
 	@Override
 	public boolean contains(Event pos) {
+		double innerCircleDiffX = (pos.x - this.innerCirclePosition.x - innerRadius);
+		double innerCircleDiffY = (pos.y - this.innerCirclePosition.y - innerRadius);
+
+		double outerCircleDiffX = (pos.x - this.position.x - outerRadius);
+		double outerCircleDiffY = (pos.y - this.position.y - outerRadius);
+
+
 		return  // the mouse position is in the inner circle, which can move
-				((pos.x - this.innerCirclePosition.x + innerRadius) * (pos.x - this.innerCirclePosition.x + innerRadius)
-				+ (pos.y - this.innerCirclePosition.y + innerRadius) * (pos.y - this.innerCirclePosition.y + innerRadius)
-				< (innerRadius * innerRadius))
+				(innerCircleDiffX * innerCircleDiffX + innerCircleDiffY * innerCircleDiffY) < (innerRadius * innerRadius)
 				||
 				// the mouse position is in the outer circle
-				((pos.x - this.position.x + outerRadius) * (pos.x - this.position.x + outerRadius)
-				+ (pos.y - this.position.y + outerRadius) * (pos.y - this.position.y + outerRadius)
-				< (outerRadius * outerRadius));
+				(outerCircleDiffX * outerCircleDiffX + outerCircleDiffY * outerCircleDiffY) < (outerRadius * outerRadius)
+				||
+				// the joystick is already currently clicked
+				currentlyClicked;
+	}
+
+	public void setOnJostickMovedListener(GuiJoystickMovedListener listener) {
+		this.listener = listener;
+	}
+
+	private void returnHandleToCenter() {
+		Handler handler = new Handler();
+		final int numberOfFrames = 5;
+		final double intervalsX = -innerMove.x / numberOfFrames;
+		final double intervalsY = -innerMove.y / numberOfFrames;
+
+		for (int i = 0; i < numberOfFrames; i++) {
+			handler.postDelayed(new Runnable() {
+				@Override
+				public void run() {
+					innerMove.x += intervalsX;
+					innerMove.y += intervalsY;
+					updateInnerCircle();
+				}
+			}, i * 40);
+		}
+	}
+
+	private void updateInnerCircle() {
+		spriteList.get(1).x = innerCirclePosition.x + innerMove.x;
+		spriteList.get(1).y = innerCirclePosition.y + innerMove.y;
 	}
 }
