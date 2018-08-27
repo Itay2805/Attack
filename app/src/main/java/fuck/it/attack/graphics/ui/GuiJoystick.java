@@ -50,7 +50,6 @@ public class GuiJoystick extends GuiElement {
 
 	@Override
 	public boolean onDown(Event e) {
-		Logger.debug("Clicked!");
 		innerMove.x = e.x - innerCirclePosition.x - innerRadius;
 		innerMove.y = e.y - innerCirclePosition.y - innerRadius;
 
@@ -77,7 +76,6 @@ public class GuiJoystick extends GuiElement {
 
 	@Override
 	public void onUp(Event e) {
-		Logger.debug("Un-Clicked!");
 		returnHandleToCenter();
 		currentlyClicked = false;
 		if (listener != null) {

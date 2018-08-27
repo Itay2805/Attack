@@ -111,16 +111,8 @@ public class MainRenderer implements GLSurfaceView.Renderer {
 		sprites[0] = new Sprite(0, 0, 0, 0, new Color(0, 0.4f, 0.2f));
 		sprites[1] = new Sprite(0, 0, 0, 0, new Color(1f, 0.4f, 0.8f));
 		sprites[2] = new Sprite(0, 0, 0, 0, new Color(0.4f, 0.2f, 0.9f));
-		tileMap = new TileMap(sprites, 64, 64);
 
-		int tileIds[] = new int[64 * 64];
-		Random random = new Random();
-
-		for (int i = 0; i < 64 * 64; i++) {
-			tileIds[i] = random.nextInt(3);
-		}
-
-		tileMap.setTileIds(tileIds);
+		tileMap = new TileMap("test.til");
 	}
 
 	@Override

@@ -61,6 +61,7 @@ public class Texture {
 			texture.width = bitmap.getWidth();
 			texture.height = bitmap.getHeight();
 		} catch (IOException e) {
+			System.err.println("Error while attempting to load '" + path + "'");
 			e.printStackTrace();
 		} finally {
 			if(bitmap != null)

@@ -1,5 +1,7 @@
 package fuck.it.attack.graphics;
 
+import android.service.quicksettings.Tile;
+import fuck.it.attack.graphics.sprite.SpriteSheet;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
 
@@ -163,10 +165,88 @@ public class Renderer {
 		}
 	}
 
+	public int submitBetter(TileMap tileMap, Camera camera, int screenWidth, int screenHeight, TileMap.Layer layer) {
+		float offsetX = camera.getPosition().x;
+		float offsetY = camera.getPosition().y;
+
+		int startX = (int) (-offsetX / TileMap.TILE_SIZE);
+		int startY = (int) (-offsetY / TileMap.TILE_SIZE);
+		int endX = (int) (-offsetX / TileMap.TILE_SIZE + 1);
+		int endY = (int) (-offsetY / TileMap.TILE_SIZE + 1);
+		if(startX < 0)
+			startX = 0;
+		if(startY < 0)
+			startY = 0;
+		if(endX > screenWidth)
+			endX = screenWidth;
+		if(endY > screenHeight)
+			endY = screenHeight;
+
+		SpriteSheet sheet = tileMap.getSpriteSheet();
+		Sprite[] sprites = tileMap.getSprites();
+		float textureId = submitTexture(sheet.getTexture());
+
+		int[] layerTiles = tileMap.getLayer(layer);
+
+		int rendered = 0;
+		for(int y = startY; y < endY; y++)
+		{
+			for(int x = startX; x < endX; x++)
+			{
+				int tileID = layerTiles[x + y * tileMap.getWidth()];
+
+				int screenY = (int)(x * TileMap.TILE_SIZE + (offsetX > 0 ? 1 : -1) * (Math.abs(offsetX) % TileMap.TILE_SIZE));
+				int screenX = (int)(x * TileMap.TILE_SIZE + (offsetY > 0 ? 1 : -1) * (Math.abs(offsetY) % TileMap.TILE_SIZE));
+
+				// rendering code
+				Vector2f uv1 = sprites[tileID].getUv1();
+				Vector2f uv2 = sprites[tileID].getUv2();
+
+				vboData.put(screenX);
+				vboData.put(screenY);
+				vboData.put(0);
+				vboData.put(uv1.x);
+				vboData.put(uv1.y);
+				vboData.put(sprites[tileID].getColorFloat());
+				vboData.put(textureId);
+
+				vboData.put(screenX + TileMap.TILE_SIZE);
+				vboData.put(screenY);
+				vboData.put(0);
+				vboData.put(uv2.x);
+				vboData.put(uv1.y);
+				vboData.put(sprites[tileID].getColorFloat());
+				vboData.put(textureId);
+
+				vboData.put(screenX + TileMap.TILE_SIZE);
+				vboData.put(screenY + TileMap.TILE_SIZE);
+				vboData.put(0);
+				vboData.put(uv2.x);
+				vboData.put(uv2.y);
+				vboData.put(sprites[tileID].getColorFloat());
+				vboData.put(textureId);
+
+				vboData.put(screenX);
+				vboData.put(screenY + TileMap.TILE_SIZE);
+				vboData.put(0);
+				vboData.put(uv1.x);
+				vboData.put(uv2.y);
+				vboData.put(sprites[tileID].getColorFloat());
+				vboData.put(textureId);
+
+				indicesCount += 6;
+
+				rendered++;
+			}
+		}
+
+		return rendered;
+	}
+
 	// The camera needs to be passed here in order to ensure the culling of the tilemap.
 	public int submit(TileMap tileMap, Camera camera, int screenWidth, int screenHeight) {
 		Sprite sprites[] = tileMap.getSprites();
-		int tiles[] = tileMap.getTiles();
+		int tiles[] = tileMap.getBackLayer();
 
 		if (textureIds == null || textureIds.length < sprites.length) {
 			textureIds = new float[sprites.length];
@@ -235,8 +315,6 @@ public class Renderer {
 				vboData.put(uv2.y);
 				vboData.put(sprites[tileID].getColorFloat());
 				vboData.put(textureIds[tileID]);
-
-				indicesCount += 6;
 			}
 		}
 
