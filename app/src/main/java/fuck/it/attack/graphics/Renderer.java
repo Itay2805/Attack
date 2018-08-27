@@ -248,13 +248,7 @@ public class Renderer {
 		Sprite sprites[] = tileMap.getSprites();
 		int tiles[] = tileMap.getBackLayer();
 
-		if (textureIds == null || textureIds.length < sprites.length) {
-			textureIds = new float[sprites.length];
-			for (int i = 0; i < sprites.length; i++) {
-				if (sprites[i].hasTexture())
-					textureIds[i] = submitTexture(sprites[i].texture);
-			}
-		}
+		float textureId = submitTexture(tileMap.getSpriteSheet().getTexture());
 
 		float playerX = camera.getPosition().x;
 		float playerY = camera.getPosition().y;
@@ -290,7 +284,7 @@ public class Renderer {
 				vboData.put(uv1.x);
 				vboData.put(uv1.y);
 				vboData.put(sprites[tileID].getColorFloat());
-				vboData.put(textureIds[tileID]);
+				vboData.put(textureId);
 
 				vboData.put(screenX + TileMap.TILE_SIZE);
 				vboData.put(screenY);
@@ -298,7 +292,7 @@ public class Renderer {
 				vboData.put(uv2.x);
 				vboData.put(uv1.y);
 				vboData.put(sprites[tileID].getColorFloat());
-				vboData.put(textureIds[tileID]);
+				vboData.put(textureId);
 
 				vboData.put(screenX + TileMap.TILE_SIZE);
 				vboData.put(screenY + TileMap.TILE_SIZE);
@@ -306,7 +300,7 @@ public class Renderer {
 				vboData.put(uv2.x);
 				vboData.put(uv2.y);
 				vboData.put(sprites[tileID].getColorFloat());
-				vboData.put(textureIds[tileID]);
+				vboData.put(textureId);
 
 				vboData.put(screenX);
 				vboData.put(screenY + TileMap.TILE_SIZE);
@@ -314,7 +308,7 @@ public class Renderer {
 				vboData.put(uv1.x);
 				vboData.put(uv2.y);
 				vboData.put(sprites[tileID].getColorFloat());
-				vboData.put(textureIds[tileID]);
+				vboData.put(textureId);
 			}
 		}
 

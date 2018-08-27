@@ -93,6 +93,8 @@ public class MainRenderer implements GLSurfaceView.Renderer {
 		worldRenderer = new Renderer();
 		worldRenderer.setProjectionMatrix(new Matrix4f().ortho(0, WIDTH, 0, HEIGHT, 1.0f, -1.0f));
 		camera = new Camera();
+		camera.getPosition().x = 0;
+		camera.getPosition().y = 0;
 		camera.setMoveFactor(64.0f * 5.0f, 64.0f * 5.0f); // 5 sprites per second, a sprite is 64 units
 
 		joystick.setOnJostickMovedListener(new GuiJoystickMovedListener() {
@@ -106,11 +108,6 @@ public class MainRenderer implements GLSurfaceView.Renderer {
 				camera.setMove(0, 0);
 			}
 		});
-
-		Sprite sprites[] = new Sprite[3];
-		sprites[0] = new Sprite(0, 0, 0, 0, new Color(0, 0.4f, 0.2f));
-		sprites[1] = new Sprite(0, 0, 0, 0, new Color(1f, 0.4f, 0.8f));
-		sprites[2] = new Sprite(0, 0, 0, 0, new Color(0.4f, 0.2f, 0.9f));
 
 		tileMap = new TileMap("test.til");
 	}
