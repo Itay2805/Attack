@@ -170,13 +170,42 @@ public class Renderer {
 		Sprite sprites[] = tileMap.getSprites();
 		int tiles[] = tileMap.getLayer(layer);
 
+		int tilesRendered = 0;
+
+		float playerX = camera.getPosition().x;
+		float playerY = camera.getPosition().y;
+
+		int x0 = (int)(playerX / TileMap.TILE_SIZE);
+		int x1 = (int)((playerX + screenWidth + TileMap.TILE_SIZE) / TileMap.TILE_SIZE);
+		int y0 = (int)(playerY / TileMap.TILE_SIZE);
+		int y1 = (int)((playerY + screenHeight + TileMap.TILE_SIZE) / TileMap.TILE_SIZE);
+
+		for(int y = y0; y < y1; y++) {
+			for(int x = x0; x < x1; x++) {
+				if(y < 0 || x < 0 || y >= tileMap.getHeight() || x >= tileMap.getWidth()) continue;
+
+				int tileID = tiles[x + y * tileMap.getWidth()];
+				if(tileID <= 0) {
+					continue;
+				}
+				int tileIndex = tileID - 1;
+
+				tilesRendered++;
+
+				// submit sprite
+				sprites[tileIndex].x = x * TileMap.TILE_SIZE - playerX;
+				sprites[tileIndex].y = y * TileMap.TILE_SIZE - playerY;
+				submit(sprites[tileIndex]);
+			}
+		}
+
+		/*
 		float playerX = camera.getPosition().x;
 		float playerY = camera.getPosition().y;
 
 		int topTileX = (int) ((Math.floor(playerX / TileMap.TILE_SIZE)) - 1);
 		int topTileY = (int) ((Math.floor(playerY / TileMap.TILE_SIZE)) - 1);
 
-		int tilesRendered = 0;
 
 		for (int y = topTileY; y < topTileY + Math.ceil(screenHeight / TileMap.TILE_SIZE) + 2; y++) {
 			for (int x = topTileX; x < topTileX + Math.ceil(screenWidth / TileMap.TILE_SIZE) + 2; x++) {
@@ -203,7 +232,7 @@ public class Renderer {
 				sprites[tileIndex].y = screenY;
 				submit(sprites[tileIndex]);
 			}
-		}
+		}*/
 
 		return tilesRendered;
 	}

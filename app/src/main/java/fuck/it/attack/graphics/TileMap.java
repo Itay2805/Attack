@@ -154,6 +154,8 @@ public class TileMap {
 				sprites[x + y * spriteSheet.getCols()] = new Sprite(0, 0, TileMap.TILE_SIZE, TileMap.TILE_SIZE, spriteSheet, x, y);
 			}
 		}
+
+		data = null;
 	}
 
 	public int[] getLayer(Layer layer) {
