@@ -110,6 +110,12 @@ public class MainRenderer implements GLSurfaceView.Renderer {
 		});
 
 		tileMap = new TileMap("test.til");
+
+		sprite = new Sprite(tileMap.getSprites()[0]);
+		sprite.x = 0;
+		sprite.y = 0;
+		sprite.width = 128;
+		sprite.height = 128;
 	}
 
 	@Override
@@ -169,8 +175,8 @@ public class MainRenderer implements GLSurfaceView.Renderer {
 
 		long start = System.currentTimeMillis();
 		worldRenderer.begin();
-		avgTilesDrawn += worldRenderer.submit(tileMap, camera, WIDTH, HEIGHT);
-		worldRenderer.submit(animatedSprite);
+		avgTilesDrawn += worldRenderer.submit(tileMap, camera, WIDTH, HEIGHT, TileMap.Layer.BACK);
+
 		worldRenderer.end();
 		worldRenderer.draw();
 		long end = System.currentTimeMillis();

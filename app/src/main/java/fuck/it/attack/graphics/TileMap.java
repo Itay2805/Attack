@@ -151,7 +151,7 @@ public class TileMap {
 		sprites = new Sprite[spriteSheet.getCols() * spriteSheet.getRows()];
 		for(int y = 0; y < spriteSheet.getRows(); y++) {
 			for(int x = 0; x < spriteSheet.getCols(); x++) {
-				sprites[x + y * spriteSheet.getCols()] = new Sprite(0, 0, SpriteSheet.SPRITE_SIZE_WIDTH, SpriteSheet.SPRITE_SIZE_HEIGHT, spriteSheet, x, y);
+				sprites[x + y * spriteSheet.getCols()] = new Sprite(0, 0, TileMap.TILE_SIZE, TileMap.TILE_SIZE, spriteSheet, x, y);
 			}
 		}
 	}
