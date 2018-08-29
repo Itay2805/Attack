@@ -80,6 +80,8 @@ public class TileMap {
 
 		// tileset name
 		tileset = "";
+		StringBuilder tilesetName = new StringBuilder();
+
 		boolean finishedName = false;
 		for(int i = 0; i < 256; i++){
 			char c = (char)data.get();
@@ -88,8 +90,10 @@ public class TileMap {
 				finishedName = true;
 				continue;
 			}
-			tileset += c;
+			tilesetName.append(c);
 		}
+
+		tileset = tilesetName.toString();
 
 		// how many tiles were stored, not important for us
 		data.getInt();
