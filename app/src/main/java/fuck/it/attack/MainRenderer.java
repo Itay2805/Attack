@@ -10,6 +10,7 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 import fuck.it.attack.core.Logger;
+import fuck.it.attack.gameplay.Player;
 import fuck.it.attack.graphics.Camera;
 import fuck.it.attack.graphics.Color;
 import fuck.it.attack.graphics.Font;
@@ -47,6 +48,7 @@ public class MainRenderer implements GLSurfaceView.Renderer {
 	private GuiRenderer renderer;
 	private Renderer worldRenderer;
 	private Camera camera;
+	private Player player;
 	private Sprite sprite;
 	private AnimatedSprite animatedSprite;
 	private SpriteSheet spriteSheet;
@@ -116,6 +118,7 @@ public class MainRenderer implements GLSurfaceView.Renderer {
 		sprite.y = 0;
 		sprite.width = 128;
 		sprite.height = 128;
+		player = new Player(camera);
 	}
 
 	@Override
@@ -164,7 +167,8 @@ public class MainRenderer implements GLSurfaceView.Renderer {
 	// 60 times a second
 	public void update(double delta) {
 		long start = System.currentTimeMillis();
-		camera.update((float) delta);
+		//camera.update((float) delta);
+		player.update((float) delta, tileMap, WIDTH, HEIGHT);
 		long end = System.currentTimeMillis();
 		avgUpdateTime += end - start;
 	}
