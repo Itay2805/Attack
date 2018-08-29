@@ -172,13 +172,13 @@ public class Renderer {
 
 		int tilesRendered = 0;
 
-		float playerX = camera.getPosition().x;
-		float playerY = camera.getPosition().y;
+		float screenX = camera.getPosition().x;
+		float screenY = camera.getPosition().y;
 
-		int x0 = (int)(playerX / TileMap.TILE_SIZE);
-		int x1 = (int)((playerX + screenWidth + TileMap.TILE_SIZE) / TileMap.TILE_SIZE);
-		int y0 = (int)(playerY / TileMap.TILE_SIZE);
-		int y1 = (int)((playerY + screenHeight + TileMap.TILE_SIZE) / TileMap.TILE_SIZE);
+		int x0 = (int)(screenX / TileMap.TILE_SIZE);
+		int x1 = (int)((screenX + screenWidth + TileMap.TILE_SIZE) / TileMap.TILE_SIZE);
+		int y0 = (int)(screenY / TileMap.TILE_SIZE);
+		int y1 = (int)((screenY + screenHeight + TileMap.TILE_SIZE) / TileMap.TILE_SIZE);
 
 		for(int y = y0; y < y1; y++) {
 			for(int x = x0; x < x1; x++) {
@@ -193,8 +193,8 @@ public class Renderer {
 				tilesRendered++;
 
 				// submit sprite
-				sprites[tileIndex].x = x * TileMap.TILE_SIZE - playerX;
-				sprites[tileIndex].y = y * TileMap.TILE_SIZE - playerY;
+				sprites[tileIndex].x = x * TileMap.TILE_SIZE - screenX;
+				sprites[tileIndex].y = y * TileMap.TILE_SIZE - screenY;
 				submit(sprites[tileIndex]);
 			}
 		}
