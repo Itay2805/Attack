@@ -194,11 +194,13 @@ public class MainRenderer implements GLSurfaceView.Renderer {
 	}
 
 	public void cleanUp() {
-		renderer.cleanUp();
-		worldRenderer.cleanUp();
-		spriteSheet.cleanUp();
-		spriteSheet2.cleanUp();
-		textures[0].cleanUp();
-		textures[1].cleanUp();
+		if (renderer != null) renderer.cleanUp();
+		if (worldRenderer != null) worldRenderer.cleanUp();
+		if (spriteSheet != null) spriteSheet.cleanUp();
+		if (spriteSheet2 != null) spriteSheet2.cleanUp();
+		if (textures != null) {
+			textures[0].cleanUp();
+			textures[1].cleanUp();
+		}
 	}
 }

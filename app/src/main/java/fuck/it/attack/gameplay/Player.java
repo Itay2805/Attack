@@ -21,12 +21,15 @@ public class Player {
 
 		int playerX = (int)((camera.getPosition().x + screenWidth / 2.0f) / TileMap.TILE_SIZE);
 		int playerY = (int)((camera.getPosition().y + screenHeight / 2.0f) / TileMap.TILE_SIZE);
+		int playerI = playerX + playerY * map.getWidth();
 
-		int currentTile = hitLayer[playerX + playerY * map.getWidth()];
+		if (0 <= playerI && playerI <= hitLayer.length) {
+			int currentTile = hitLayer[playerX + playerY * map.getWidth()];
 
-		if (currentTile != 0) {
-			// do collision my friend
-			Logger.error("ERMAGAWD COLLISION");
+			if (currentTile != 0) {
+				// do collision my friend
+				Logger.error("ERMAGAWD COLLISION");
+			}
 		}
 	}
 
